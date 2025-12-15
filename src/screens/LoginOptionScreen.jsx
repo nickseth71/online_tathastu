@@ -1,0 +1,282 @@
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Platform,
+  Alert,
+  TextInput,
+  Dimensions,
+  ScrollView,
+  Image,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import LinearGradient from 'react-native-linear-gradient';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import { SvgXml } from 'react-native-svg';
+import { googleSvg } from '../constants/SVGImages';
+
+const WEB_CLIENT_ID = "YOUR_WEB_CLIENT_ID_HERE";
+
+// Get device dimensions
+const { width, height } = Dimensions.get('window');
+
+export default function LoginOptions({ navigation }) {
+  const [mobile, setMobile] = useState('');
+
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: WEB_CLIENT_ID,
+    });
+  }, []);
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+
+      Alert.alert(
+        'Login Success',
+        `Welcome, ${userInfo.user.name || userInfo.user.email}!`,
+        [{ text: 'OK', onPress: () => navigation.replace("Home") }]
+      );
+
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) return;
+      if (error.code === statusCodes.IN_PROGRESS) return;
+      if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE)
+        return Alert.alert("Error", "Google Play Services outdated");
+
+      Alert.alert("Error", error.message);
+    }
+  };
+
+  const handleMobileLogin = () => {
+    if (mobile.length !== 10)
+      return Alert.alert("Invalid", "Please enter a valid 10-digit mobile number");
+
+    navigation.navigate("OTPScreen", { mobile });
+  };
+
+  const handleSkip = () => navigation.replace("Main");
+
+  return (
+    <LinearGradient
+      colors={["#ffe8d3", "#fff"]}
+      style={{ flex: 1 }}
+    >
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* TOP AREA */}
+
+          <Image
+            source={require('../assets/logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+
+          <Text style={styles.title}>
+            Welcome to <Text style={{ color: '#f4850f' }}>Online Tathastu</Text>
+          </Text>
+
+          {/* MIDDLE (CARD AREA) */}
+          <View style={styles.card}>
+            <Text style={styles.label}>Login with Mobile</Text>
+
+            <TextInput
+              style={styles.mobileInput}
+              placeholder="Enter Mobile Number"
+              placeholderTextColor={'#a49999ff'}
+              keyboardType="number-pad"
+              maxLength={10}
+              value={mobile}
+              onChangeText={setMobile}
+            />
+
+            <TouchableOpacity
+              style={[styles.mobileButton, mobile.length === 10 ? {} : { opacity: 0.5 }]}
+              onPress={handleMobileLogin}
+              disabled={mobile.length !== 10}
+            >
+              <Text style={styles.mobileText}>Submit</Text>
+            </TouchableOpacity>
+
+            <View style={styles.separatorContainer}>
+              <View style={styles.separatorLine} />
+              <Text style={styles.separatorText}>OR</Text>
+              <View style={styles.separatorLine} />
+            </View>
+
+            <TouchableOpacity style={styles.googleButton} onPress={handleGoogleSignIn}>
+              <SvgXml xml={googleSvg} width={22} height={22} />
+              <Text style={styles.googleText}>Continue with Google</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* BOTTOM AREA */}
+          <View style={styles.bottomArea}>
+            <TouchableOpacity onPress={handleSkip} style={styles.skip}>
+              <Text style={styles.skipText}>Skip for now →</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.termsText}>
+              By continuing, you agree to our
+              <Text style={styles.linkText}> Terms </Text>
+              and
+              <Text style={styles.linkText}> Privacy Policy</Text>.
+            </Text>
+          </View>
+
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'space-between',
+    padding: width * 0.05,
+  },
+  logo: {
+    width: width * 0.5,
+    height: height * 0.15,
+    alignSelf: 'center',
+    marginTop: height * 0.05,
+  },
+
+  title: {
+    fontSize: width * 0.07,
+    fontWeight: "800",
+    // marginTop: height * 0.03,
+    color: "#222",
+    textAlign: "center",
+    lineHeight: width * 0.09,
+  },
+
+  card: {
+    width: '100%',
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: width * 0.05,
+    // marginTop: height * 0.05,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOpacity: 0.15,
+        shadowOffset: { width: 0, height: 5 },
+        shadowRadius: 15,
+      },
+      android: {
+        elevation: 8,
+      }
+    })
+  },
+
+  label: {
+    fontSize: width * 0.045,
+    fontWeight: "600",
+    marginBottom: 10,
+    color: "#444",
+  },
+
+  mobileInput: {
+    height: height * 0.065,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    marginBottom: 15,
+    fontSize: width * 0.045,
+  },
+
+  mobileButton: {
+    height: height * 0.065,
+    backgroundColor: "#f4850f",
+    borderRadius: 10,
+    justifyContent: "center",
+    marginBottom: 20,
+  },
+
+  mobileText: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: width * 0.045,
+    fontWeight: "600",
+  },
+
+  separatorContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 15,
+  },
+
+  separatorLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#ddd",
+  },
+
+  separatorText: {
+    marginHorizontal: 10,
+    color: "#999",
+    fontWeight: "600",
+    fontSize: width * 0.035,
+  },
+
+  googleButton: {
+    flexDirection: "row",
+    height: height * 0.065,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 12,
+  },
+
+  googleText: {
+    fontSize: width * 0.045,
+    fontWeight: "500",
+    color: "#333",
+  },
+
+  bottomArea: {
+    alignItems: "center",
+    marginBottom: height * 0.03,
+  },
+
+  skip: {
+    marginTop: 10,
+  },
+
+  skipText: {
+    color: "#555",
+    fontSize: width * 0.04,
+    textDecorationLine: "underline",
+  },
+
+  termsText: {
+    marginTop: height * 0.05,
+    fontSize: width * 0.03,
+    textAlign: "center",
+    color: "#666",
+  },
+
+  linkText: {
+    color: "#f4850f",
+    fontWeight: "700",
+  }
+});
