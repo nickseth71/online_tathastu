@@ -9,6 +9,7 @@ import {
   Dimensions,
 } from 'react-native';
 import AppHeader from '../components/AppHeader';
+import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48) / 2;
@@ -35,9 +36,18 @@ const PRODUCTS = [
 ];
 
 export default function StoreScreen() {
+
+
+  const navigation = useNavigation();
+
   const renderItem = ({ item }) => (
-    <View style={styles.card}>
-      {/* Corrected image source */}
+    <TouchableOpacity
+      style={styles.card}
+      activeOpacity={0.8}
+      onPress={() =>
+        navigation.navigate('ProductDetail', { product: item })
+      }
+    >
       <Image source={item.image} style={styles.image} />
 
       <Text style={styles.name} numberOfLines={1}>
@@ -49,7 +59,7 @@ export default function StoreScreen() {
       <TouchableOpacity style={styles.button} activeOpacity={0.8}>
         <Text style={styles.buttonText}>Add to Cart</Text>
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -92,8 +102,6 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 12,
     alignItems: 'center',
-
-    // Shadow
     elevation: 3,
     shadowColor: '#000',
     shadowOpacity: 0.08,

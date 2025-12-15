@@ -44,7 +44,10 @@ export default function BlogsScreen() {
     const renderItem = ({ item, index }) => (
         <View style={styles.videoContainer}>
             {/* TAP TO PLAY / PAUSE */}
-            <TouchableWithoutFeedback onPress={() => setPaused(!paused)}>
+            <TouchableWithoutFeedback
+                onPress={() => setPaused(!paused)}
+                style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+            >
                 <Video
                     source={{ uri: item.videoUrl }}
                     style={styles.video}
@@ -106,10 +109,12 @@ const styles = StyleSheet.create({
         width,
         height,
         backgroundColor: 'black',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     video: {
         width: '100%',
-        height: '100%',
+        height: '45%',
     },
     rightActions: {
         position: 'absolute',

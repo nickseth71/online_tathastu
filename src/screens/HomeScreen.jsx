@@ -37,8 +37,6 @@ export default function HomeScreen({ navigation }) {
             style={styles.container}
             contentContainerStyle={styles.scrollContent}
         >
-
-
             <View style={styles.squaresContainer}>
                 {items.map((item, index) => (
                     <TouchableOpacity
@@ -131,7 +129,7 @@ const styles = StyleSheet.create({
     },
     banner: {
         width: screenWidth - outerPadding * 2,
-        height: 120, // Slightly taller banner
+        height: 120,
         borderRadius: 12,
     },
 });
