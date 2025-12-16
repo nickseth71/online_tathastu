@@ -1,212 +1,242 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
     View,
     Text,
     StyleSheet,
-    Image,
-    Dimensions,
     ScrollView,
     TouchableOpacity,
-    TextInput,
-    Platform,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { Picker } from '@react-native-picker/picker';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-
-const screenWidth = Dimensions.get('window').width;
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { COLORS } from '../theme/colors';
 
 export default function ProfileScreen() {
-    const insets = useSafeAreaInsets();
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
-    const [dob, setDob] = useState(new Date());
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const [timeOfBirth, setTimeOfBirth] = useState(new Date());
-    const [showTimePicker, setShowTimePicker] = useState(false);
-    const [birthPlace, setBirthPlace] = useState('');
-    const [gender, setGender] = useState('male');
-    const [bio, setBio] = useState('');
-    const [location, setLocation] = useState('');
-
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
-            <ScrollView
-                contentContainerStyle={{
-                    paddingBottom: insets.bottom + 40,
-                }}
-                showsVerticalScrollIndicator={false}
-            >
-                {/* Banner */}
-                <View style={styles.bannerContainer}>
-                    <Image
-                        source={require('../assets/BannerImage1.jpg')}
-                        style={styles.bannerImage}
-                    />
-                    <View style={styles.profileImageContainer}>
-                        <Image
-                            source={require('../assets/BannerImage1.jpg')}
-                            style={styles.profileImage}
-                        />
+        <SafeAreaView style={styles.container}>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 200 }}>
+
+                {/* Header */}
+                <View style={styles.header}>
+                    <Text style={styles.headerTitle}>Profile</Text>
+                    <Text style={styles.headerSub}>Manage your account</Text>
+                </View>
+
+                {/* Profile Card */}
+                <View style={styles.profileCard}>
+                    <View style={styles.profileRow}>
+                        <View style={styles.avatar}>
+                            <Text style={styles.avatarText}>U</Text>
+                        </View>
+
+                        <View style={{ flex: 1 }}>
+                            <Text style={styles.userName}>User Name</Text>
+                            <Text style={styles.userInfo}>+91 XXXXX XXXXX</Text>
+                            <Text style={styles.userInfo}>email@example.com</Text>
+                        </View>
+
+                        <TouchableOpacity style={styles.editIcon}>
+                            <Icon name="pencil" size={16} color="#fff" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.divider} />
+
+                    <View style={styles.statsRow}>
+                        <Stat label="Bookings" value="12" icon="ribbon-outline" />
+                        <Stat label="Favorites" value="8" icon="heart-outline" />
+                        <Stat label="Reviews" value="5" icon="star-outline" />
                     </View>
                 </View>
 
-                {/* User Info Inputs */}
-                <View style={styles.inputContainer}>
-                    <Text style={styles.inputLabel}>Full Name</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={name}
-                        onChangeText={setName}
-                        placeholder="John Doe"
-                    />
-
-                    <Text style={styles.inputLabel}>Email</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={email}
-                        onChangeText={setEmail}
-                        placeholder="johndoe@example.com"
-                        keyboardType="email-address"
-                    />
-
-                    <Text style={styles.inputLabel}>Phone</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={phone}
-                        onChangeText={setPhone}
-                        placeholder="+1 234 567 890"
-                        keyboardType="phone-pad"
-                    />
-
-                    <Text style={styles.inputLabel}>Date of Birth</Text>
-                    <TouchableOpacity
-                        style={styles.input}
-                        onPress={() => setShowDatePicker(true)}
-                    >
-                        <Text>{dob.toDateString()}</Text>
-                    </TouchableOpacity>
-                    {showDatePicker && (
-                        <DateTimePicker
-                            value={dob}
-                            mode="date"
-                            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                            onChange={(event, selectedDate) => {
-                                setShowDatePicker(Platform.OS === 'ios');
-                                if (selectedDate) setDob(selectedDate);
-                            }}
-                        />
-                    )}
-
-                    <Text style={styles.inputLabel}>Time of Birth</Text>
-                    <TouchableOpacity
-                        style={styles.input}
-                        onPress={() => setShowTimePicker(true)}
-                    >
-                        <Text>{timeOfBirth.toLocaleTimeString()}</Text>
-                    </TouchableOpacity>
-                    {showTimePicker && (
-                        <DateTimePicker
-                            value={timeOfBirth}
-                            mode="time"
-                            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                            onChange={(event, selectedTime) => {
-                                setShowTimePicker(Platform.OS === 'ios');
-                                if (selectedTime) setTimeOfBirth(selectedTime);
-                            }}
-                        />
-                    )}
-
-                    <Text style={styles.inputLabel}>Place of Birth</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={birthPlace}
-                        onChangeText={setBirthPlace}
-                        placeholder="New York, USA"
-                    />
-
-                    <Text style={styles.inputLabel}>Gender</Text>
-                    <View style={styles.pickerContainer}>
-                        <Picker
-                            selectedValue={gender}
-                            onValueChange={itemValue => setGender(itemValue)}
-                            style={{ width: '100%' }}
-                        >
-                            <Picker.Item label="Male" value="male" />
-                            <Picker.Item label="Female" value="female" />
-                            <Picker.Item label="Other" value="other" />
-                        </Picker>
+                {/* Membership Card */}
+                <View style={styles.membershipCard}>
+                    <View style={styles.membershipHeader}>
+                        <Text style={styles.membershipTitle}>Gold Member</Text>
+                        <Icon name="medal-outline" size={22} color="#fff" />
                     </View>
 
-                    <Text style={styles.inputLabel}>Bio</Text>
-                    <TextInput
-                        style={[styles.input, { height: 80 }]}
-                        value={bio}
-                        onChangeText={setBio}
-                        placeholder="Tell something about yourself"
-                        multiline
-                    />
+                    <Text style={styles.benefitText}>Benefits Used</Text>
 
-                    <Text style={styles.inputLabel}>Current Location</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={location}
-                        onChangeText={setLocation}
-                        placeholder="City, Country"
-                    />
+                    <View style={styles.progressBar}>
+                        <View style={styles.progressFill} />
+                    </View>
+
+                    <Text style={styles.progressText}>65%</Text>
                 </View>
 
-                {/* Save Button */}
-                <TouchableOpacity style={styles.saveButton}>
-                    <Text style={styles.saveButtonText}>Save Profile</Text>
-                </TouchableOpacity>
+                {/* Menu */}
+                <View style={styles.menuCard}>
+                    <MenuItem icon="person-outline" label="Edit Profile" />
+                    <MenuItem icon="location-outline" label="Saved Addresses" />
+                    <MenuItem icon="heart-outline" label="Wishlist" />
+                    <MenuItem icon="notifications-outline" label="Notifications" />
+                    <MenuItem icon="calendar-outline" label="Panchang & Horoscope" />
+                    <MenuItem icon="settings-outline" label="Settings" />
+                    <MenuItem icon="help&support" label="Help & Support" />
+
+                </View>
+
             </ScrollView>
         </SafeAreaView>
     );
 }
 
+/* Components */
+const Stat = ({ icon, value, label }) => (
+    <View style={styles.statItem}>
+        <Icon name={icon} size={18} color="#f97316" />
+        <Text style={styles.statValue}>{value}</Text>
+        <Text style={styles.statLabel}>{label}</Text>
+    </View>
+);
+
+const MenuItem = ({ icon, label }) => (
+    <TouchableOpacity style={styles.menuItem}>
+        <Icon name={icon} size={20} color="#f97316" />
+        <Text style={styles.menuText}>{label}</Text>
+        <Icon name="chevron-forward" size={18} color="#999" />
+    </TouchableOpacity>
+);
+
+/* Styles */
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#f5f5f5' },
-    bannerContainer: { position: 'relative', width: '100%', height: 150 },
-    bannerImage: { width: '100%', height: '100%' },
-    profileImageContainer: {
-        position: 'absolute',
-        bottom: -50,
-        left: screenWidth / 2 - 50,
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        overflow: 'hidden',
-        borderWidth: 3,
-        borderColor: '#fff',
+    container: {
+        flex: 1,
+        backgroundColor: '#f5f5f5',
     },
-    profileImage: { width: '100%', height: '100%' },
-    inputContainer: { width: '90%', alignSelf: 'center', marginTop: 60 },
-    inputLabel: { fontSize: 14, fontWeight: '600', color: '#333', marginTop: 15 },
-    input: {
+
+    header: {
+        backgroundColor: COLORS.APP_BACKGROUND,
+        padding: 20,
+        paddingBottom: 60,
+    },
+    headerTitle: {
+        color: '#fff',
+        fontSize: 22,
+        fontWeight: '700',
+    },
+    headerSub: {
+        color: '#ffe7d1',
+        marginTop: 4,
+    },
+
+    profileCard: {
         backgroundColor: '#fff',
-        borderRadius: 10,
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        marginTop: 5,
-        fontSize: 14,
-        color: '#333',
+        marginHorizontal: 16,
+        marginTop: -40,
+        borderRadius: 16,
+        padding: 16,
+        elevation: 4,
     },
-    pickerContainer: {
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        marginTop: 5,
-        overflow: 'hidden',
-    },
-    saveButton: {
-        backgroundColor: '#f4850fff',
-        paddingVertical: 15,
-        borderRadius: 25,
-        width: '90%',
-        alignSelf: 'center',
-        marginVertical: 30,
+    profileRow: {
+        flexDirection: 'row',
         alignItems: 'center',
     },
-    saveButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+    avatar: {
+        width: 56,
+        height: 56,
+        borderRadius: 28,
+        backgroundColor: '#f97316',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 12,
+    },
+    avatarText: {
+        color: '#fff',
+        fontSize: 22,
+        fontWeight: '700',
+    },
+    editIcon: {
+        backgroundColor: '#f97316',
+        padding: 6,
+        borderRadius: 20,
+    },
+    userName: {
+        fontSize: 16,
+        fontWeight: '700',
+    },
+    userInfo: {
+        color: '#777',
+        fontSize: 12,
+        marginTop: 2,
+    },
+
+    divider: {
+        height: 1,
+        backgroundColor: '#eee',
+        marginVertical: 12,
+    },
+
+    statsRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    statItem: {
+        alignItems: 'center',
+        flex: 1,
+    },
+    statValue: {
+        fontSize: 16,
+        fontWeight: '700',
+        marginTop: 4,
+    },
+    statLabel: {
+        fontSize: 12,
+        color: '#777',
+    },
+
+    membershipCard: {
+        backgroundColor: '#f97316',
+        margin: 16,
+        borderRadius: 16,
+        padding: 16,
+    },
+    membershipHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    membershipTitle: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: '700',
+    },
+    benefitText: {
+        color: '#ffe7d1',
+        marginTop: 12,
+    },
+    progressBar: {
+        height: 8,
+        backgroundColor: '#ffa94d',
+        borderRadius: 8,
+        marginTop: 6,
+        overflow: 'hidden',
+    },
+    progressFill: {
+        width: '65%',
+        height: '100%',
+        backgroundColor: '#fff',
+    },
+    progressText: {
+        color: '#fff',
+        marginTop: 6,
+        fontWeight: '600',
+    },
+
+    menuCard: {
+        backgroundColor: '#fff',
+        marginHorizontal: 16,
+        borderRadius: 16,
+        paddingVertical: 8,
+        marginBottom: 30,
+    },
+    menuItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 14,
+    },
+    menuText: {
+        flex: 1,
+        marginLeft: 12,
+        fontSize: 14,
+    },
 });

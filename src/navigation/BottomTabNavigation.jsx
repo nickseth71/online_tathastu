@@ -32,10 +32,10 @@ export default function BottomTabs() {
                             return null;
                     }
                 },
-                tabBarActiveTintColor: '#ffffff',
-                tabBarInactiveTintColor: '#000',
+                tabBarActiveTintColor: '#f97316',
+                tabBarInactiveTintColor: '#6a7282',
                 tabBarStyle: {
-                    backgroundColor: '#f4850fff',
+                    // backgroundColor: '#f97316',
                     position: 'absolute',
                     height: 60,
                     borderTopLeftRadius: 16,
