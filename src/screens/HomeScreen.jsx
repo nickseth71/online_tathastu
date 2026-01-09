@@ -289,7 +289,6 @@ import {
     StyleSheet,
     ScrollView,
     TouchableOpacity,
-    Image,
     Dimensions,
     TextInput,
 } from 'react-native';
@@ -297,35 +296,46 @@ import {
 import { SvgXml } from 'react-native-svg';
 import { COLORS } from '../theme/colors';
 import { Notification_SVG, Search_SVG } from '../constants/SVGImages';
+import Video from 'react-native-video';
 
 
 const { width } = Dimensions.get('window');
 
-
-
-
-
 const QUICK_SERVICES = [
-    { title: 'Book Puja', icon: '🏠' },
-    { title: 'Festival', icon: '📅' },
-    { title: 'Astrology', icon: '⭐' },
-    { title: 'Kundli', icon: '📖' },
+    { title: 'Dharma', icon: '🏠' },
+    { title: 'Karam Kand', icon: '📅' },
+    { title: 'Jyotish', icon: '⭐' },
+    { title: 'Vastu', icon: '📖' },
 ];
 
-const DarshanCard = ({ image, title, viewers }) => (
+const DarshanCard = ({ videoUrl, title, viewers }) => (
     <View style={styles.darshanCard}>
-        {/* Placeholder for actual image source */}
-        <Image source={{ uri: 'https://via.placeholder.com/300x160.png?text=Golden+Temple' }} style={styles.darshanImage} />
-        <View style={styles.liveBadge}>
-            <Text style={styles.liveText}>● LIVE</Text>
+        <View style={styles.videoWrapper}>
+            <Video
+                source={{ uri: videoUrl }}
+                style={styles.darshanVideo}
+                resizeMode="cover"
+                repeat
+                muted
+                paused={false}
+            />
+
+            {/* LIVE badge */}
+            <View style={styles.liveBadge}>
+                <Text style={styles.liveText}>● LIVE</Text>
+            </View>
+
+            {/* Play icon overlay */}
+            <View style={styles.playIcon}>
+                <Text style={{ fontSize: 26, color: COLORS.WHITE }}>▶</Text>
+            </View>
         </View>
-        <View style={styles.playIcon}>
-            <Text style={{ fontSize: 26, color: COLORS.WHITE }}>▶</Text>
-        </View>
+
         <Text style={styles.darshanTitle}>{title}</Text>
         <Text style={styles.viewers}>{viewers}</Text>
     </View>
 );
+
 
 export default function HomeScreen() {
     return (
@@ -404,16 +414,24 @@ export default function HomeScreen() {
                 </TouchableOpacity>
             </View>
 
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScrollPadding}>
+            <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.horizontalScrollPadding}
+            >
                 <DarshanCard
                     title="Golden Temple, Amritsar"
                     viewers="2.3K watching"
+                    videoUrl="https://www.w3schools.com/html/mov_bbb.mp4"
                 />
+
                 <DarshanCard
                     title="Tirupati Balaji Temple"
                     viewers="5.1K watching"
+                    videoUrl="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
                 />
             </ScrollView>
+
 
             <View style={{ height: 30 }} />
         </ScrollView>
@@ -448,8 +466,10 @@ const styles = StyleSheet.create({
         marginTop: 4,
     },
     bell: {
-        position: 'relative',
-        padding: 4,
+        padding: 6,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        borderRadius: 20,
+        marginBottom: 10,
     },
     notificationDot: {
         position: 'absolute',
@@ -583,7 +603,6 @@ const styles = StyleSheet.create({
         color: '#333',
     },
 
-    /* Live Darshan */
     sectionHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -615,6 +634,18 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         resizeMode: 'cover',
     },
+    videoWrapper: {
+        width: '100%',
+        height: 160,
+        borderRadius: 16,
+        overflow: 'hidden',
+    },
+
+    darshanVideo: {
+        width: '100%',
+        height: '100%',
+    },
+
     liveBadge: {
         position: 'absolute',
         top: 10,
@@ -631,9 +662,9 @@ const styles = StyleSheet.create({
     },
     playIcon: {
         position: 'absolute',
-        top: 60, // ~40% of 160
+        top: 60,
         left: '50%',
-        marginLeft: -15, // Center it properly
+        marginLeft: -15,
         width: 40,
         height: 40,
         borderRadius: 20,

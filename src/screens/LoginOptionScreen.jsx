@@ -20,9 +20,8 @@ import {
 import { SvgXml } from 'react-native-svg';
 import { googleSvg } from '../constants/SVGImages';
 
-const WEB_CLIENT_ID = "YOUR_WEB_CLIENT_ID_HERE";
+const WEB_CLIENT_ID = 'YOUR_WEB_CLIENT_ID_HERE';
 
-// Get device dimensions
 const { width, height } = Dimensions.get('window');
 
 export default function LoginOptions({ navigation }) {
@@ -42,33 +41,32 @@ export default function LoginOptions({ navigation }) {
       Alert.alert(
         'Login Success',
         `Welcome, ${userInfo.user.name || userInfo.user.email}!`,
-        [{ text: 'OK', onPress: () => navigation.replace("Home") }]
+        [{ text: 'OK', onPress: () => navigation.replace('Home') }],
       );
-
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) return;
       if (error.code === statusCodes.IN_PROGRESS) return;
       if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE)
-        return Alert.alert("Error", "Google Play Services outdated");
+        return Alert.alert('Error', 'Google Play Services outdated');
 
-      Alert.alert("Error", error.message);
+      Alert.alert('Error', error.message);
     }
   };
 
   const handleMobileLogin = () => {
     if (mobile.length !== 10)
-      return Alert.alert("Invalid", "Please enter a valid 10-digit mobile number");
+      return Alert.alert(
+        'Invalid',
+        'Please enter a valid 10-digit mobile number',
+      );
 
-    navigation.navigate("OTPScreen", { mobile });
+    navigation.navigate('OTPScreen', { mobile });
   };
 
-  const handleSkip = () => navigation.replace("Main");
+  const handleSkip = () => navigation.replace('Main');
 
   return (
-    <LinearGradient
-      colors={["#ffe8d3", "#fff"]}
-      style={{ flex: 1 }}
-    >
+    <LinearGradient colors={['#ffe8d3', '#fff']} style={{ flex: 1 }}>
       <SafeAreaView style={styles.safeArea}>
         <ScrollView
           contentContainerStyle={styles.scrollContainer}
@@ -101,7 +99,10 @@ export default function LoginOptions({ navigation }) {
             />
 
             <TouchableOpacity
-              style={[styles.mobileButton, mobile.length === 10 ? {} : { opacity: 0.5 }]}
+              style={[
+                styles.mobileButton,
+                mobile.length === 10 ? {} : { opacity: 0.5 },
+              ]}
               onPress={handleMobileLogin}
               disabled={mobile.length !== 10}
             >
@@ -114,7 +115,10 @@ export default function LoginOptions({ navigation }) {
               <View style={styles.separatorLine} />
             </View>
 
-            <TouchableOpacity style={styles.googleButton} onPress={handleGoogleSignIn}>
+            <TouchableOpacity
+              style={styles.googleButton}
+              onPress={handleGoogleSignIn}
+            >
               <SvgXml xml={googleSvg} width={22} height={22} />
               <Text style={styles.googleText}>Continue with Google</Text>
             </TouchableOpacity>
@@ -133,7 +137,6 @@ export default function LoginOptions({ navigation }) {
               <Text style={styles.linkText}> Privacy Policy</Text>.
             </Text>
           </View>
-
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
@@ -158,43 +161,43 @@ const styles = StyleSheet.create({
 
   title: {
     fontSize: width * 0.07,
-    fontWeight: "800",
+    fontWeight: '800',
     // marginTop: height * 0.03,
-    color: "#222",
-    textAlign: "center",
+    color: '#222',
+    textAlign: 'center',
     lineHeight: width * 0.09,
   },
 
   card: {
     width: '100%',
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 20,
     padding: width * 0.05,
     // marginTop: height * 0.05,
     ...Platform.select({
       ios: {
-        shadowColor: "#000",
+        shadowColor: '#000',
         shadowOpacity: 0.15,
         shadowOffset: { width: 0, height: 5 },
         shadowRadius: 15,
       },
       android: {
         elevation: 8,
-      }
-    })
+      },
+    }),
   },
 
   label: {
     fontSize: width * 0.045,
-    fontWeight: "600",
+    fontWeight: '600',
     marginBottom: 10,
-    color: "#444",
+    color: '#444',
   },
 
   mobileInput: {
     height: height * 0.065,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: '#ddd',
     borderRadius: 10,
     paddingHorizontal: 15,
     marginBottom: 15,
@@ -203,58 +206,58 @@ const styles = StyleSheet.create({
 
   mobileButton: {
     height: height * 0.065,
-    backgroundColor: "#f4850f",
+    backgroundColor: '#f4850f',
     borderRadius: 10,
-    justifyContent: "center",
+    justifyContent: 'center',
     marginBottom: 20,
   },
 
   mobileText: {
-    color: "#fff",
-    textAlign: "center",
+    color: '#fff',
+    textAlign: 'center',
     fontSize: width * 0.045,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 
   separatorContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 15,
   },
 
   separatorLine: {
     flex: 1,
     height: 1,
-    backgroundColor: "#ddd",
+    backgroundColor: '#ddd',
   },
 
   separatorText: {
     marginHorizontal: 10,
-    color: "#999",
-    fontWeight: "600",
+    color: '#999',
+    fontWeight: '600',
     fontSize: width * 0.035,
   },
 
   googleButton: {
-    flexDirection: "row",
+    flexDirection: 'row',
     height: height * 0.065,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#ddd",
-    backgroundColor: "#fff",
-    justifyContent: "center",
-    alignItems: "center",
+    borderColor: '#ddd',
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 12,
   },
 
   googleText: {
     fontSize: width * 0.045,
-    fontWeight: "500",
-    color: "#333",
+    fontWeight: '500',
+    color: '#333',
   },
 
   bottomArea: {
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: height * 0.03,
   },
 
@@ -263,20 +266,20 @@ const styles = StyleSheet.create({
   },
 
   skipText: {
-    color: "#555",
+    color: '#555',
     fontSize: width * 0.04,
-    textDecorationLine: "underline",
+    textDecorationLine: 'underline',
   },
 
   termsText: {
     marginTop: height * 0.05,
     fontSize: width * 0.03,
-    textAlign: "center",
-    color: "#666",
+    textAlign: 'center',
+    color: '#666',
   },
 
   linkText: {
-    color: "#f4850f",
-    fontWeight: "700",
-  }
+    color: '#f4850f',
+    fontWeight: '700',
+  },
 });

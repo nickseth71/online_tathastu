@@ -6,8 +6,9 @@ import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import BlogsScreen from '../screens/BlogScreen';
 import StoreScreen from '../screens/StoreScreen';
+import BookingsScreen from '../screens/BookingsScreen';
 
-import { lotusSvg, profileSvg, storeSvg, blogsSvg } from '../constants/SVGImages';
+import { lotusSvg, profileSvg, storeSvg, blogsSvg, BookingSvg } from '../constants/SVGImages';
 
 
 const Tab = createBottomTabNavigator();
@@ -22,6 +23,8 @@ export default function BottomTabs() {
                     switch (route.name) {
                         case 'Home':
                             return <SvgXml xml={lotusSvg} width={IconSize} height={IconSize} fill={color} />;
+                        case 'Bookings':
+                            return <SvgXml xml={BookingSvg} width={IconSize} height={IconSize} fill={color} />;
                         case 'Profile':
                             return <SvgXml xml={profileSvg} width={IconSize} height={IconSize} fill={color} />;
                         case 'Store':
@@ -51,6 +54,7 @@ export default function BottomTabs() {
         >
 
             <Tab.Screen name="Home" component={HomeScreen} />
+            <Tab.Screen name="Bookings" component={BookingsScreen} />
             <Tab.Screen name="Blogs" component={BlogsScreen} />
             <Tab.Screen name="Store" component={StoreScreen} />
             <Tab.Screen name="Profile" component={ProfileScreen} />

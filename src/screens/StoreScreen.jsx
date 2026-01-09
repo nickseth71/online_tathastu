@@ -190,6 +190,9 @@ const styles = StyleSheet.create({
 
   cartBtn: {
     padding: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 20,
+    marginBottom: 10,
   },
 
   title: {

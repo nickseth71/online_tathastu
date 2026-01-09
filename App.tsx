@@ -5,6 +5,7 @@ import SplashScreen from './src/screens/SplashScreen';
 import { configureGoogleSignIn } from './src/config/GoogleConfig';
 import { StatusBar } from 'react-native';
 import { COLORS } from './src/theme/colors';
+import { navigationRef } from './src/services/NavigationService';
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -17,7 +18,7 @@ export default function App() {
   if (loading) return <SplashScreen />;
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <StatusBar
         barStyle="light-content"
         backgroundColor={COLORS.APP_BACKGROUND}
