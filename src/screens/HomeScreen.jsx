@@ -1,287 +1,3 @@
-// import React from 'react';
-// import {
-//     View,
-//     Text,
-//     StyleSheet,
-//     ScrollView,
-//     TouchableOpacity,
-//     Image,
-//     Dimensions,
-//     TextInput,
-// } from 'react-native';
-// import { COLORS } from '../theme/colors';
-// import { SvgXml } from 'react-native-svg';
-// import { Notification_SVG, Search_SVG } from '../constants/SVGImages';
-// const { width } = Dimensions.get('window');
-
-// const QUICK_SERVICES = [
-//     { title: 'Book Puja', icon: '🏠' },
-//     { title: 'Festival', icon: '📅' },
-//     { title: 'Astrology', icon: '⭐' },
-//     { title: 'Kundli', icon: '📖' },
-// ];
-
-// export default function HomeScreen() {
-//     return (
-//         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-//             {/* 🔶 Header */}
-//             <View style={styles.header}>
-//                 <View>
-//                     <Text style={styles.logo}>🔥 Tathastu</Text>
-//                     <Text style={styles.subText}>Namaste, Devotee 🙏</Text>
-//                 </View>
-//                 <View style={styles.bell}>
-//                     <SvgXml xml={Notification_SVG} width={24} height={24} />
-//                     <View style={styles.notificationDot} />
-//                 </View>
-//             </View>
-
-//             {/* 🔍 Search */}
-//             <View style={styles.searchBox}>
-//                 <SvgXml xml={Search_SVG} width={16} height={16} fill="#888" />
-//                 <TextInput
-//                     placeholder="Search products..."
-//                     style={styles.searchInput}
-//                 />
-//             </View>
-
-//             {/* ⚡ Quick Services */}
-//             <View style={styles.card}>
-//                 <Text style={styles.sectionTitle}>Quick Services</Text>
-//                 <View style={styles.quickRow}>
-//                     {QUICK_SERVICES.map((item, index) => (
-//                         <TouchableOpacity key={index} style={styles.quickItem}>
-//                             <View style={styles.quickIcon}>
-//                                 <Text style={{ fontSize: 20 }}>{item.icon}</Text>
-//                             </View>
-//                             <Text style={styles.quickText}>{item.title}</Text>
-//                         </TouchableOpacity>
-//                     ))}
-//                 </View>
-//             </View>
-
-//             {/* 📅 Panchang */}
-//             <View style={styles.panchangCard}>
-//                 <View style={styles.panchangHeader}>
-//                     <Text style={styles.sectionTitle}>Today’s Panchang</Text>
-//                     <Text style={styles.date}>Dec 15, 2025</Text>
-//                 </View>
-
-//                 <View style={styles.panchangRow}>
-//                     <Text style={styles.panchangText}>Tithi: Ekadashi</Text>
-//                     <Text style={styles.panchangText}>Nakshatra: Rohini</Text>
-//                 </View>
-//                 <View style={styles.panchangRow}>
-//                     <Text style={styles.panchangText}>Yoga: Shukla</Text>
-//                     <Text style={styles.panchangText}>Karana: Bava</Text>
-//                 </View>
-//             </View>
-
-//             {/* 🔴 Live Darshan */}
-//             <View style={styles.sectionHeader}>
-//                 <Text style={styles.sectionTitle}>Live Darshan</Text>
-//                 <Text style={styles.link}>View All</Text>
-//             </View>
-
-//             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-//                 <DarshanCard
-//                     image={require('../assets/bannerImage2.jpg')}
-//                     title="Golden Temple, Amritsar"
-//                     viewers="2.3K watching"
-//                 />
-//                 <DarshanCard
-//                     image={require('../assets/BannerImage1.jpg')}
-//                     title="Tirupati Balaji Temple"
-//                     viewers="5.1K watching"
-//                 />
-//             </ScrollView>
-
-//             <View style={{ height: 30 }} />
-//         </ScrollView>
-//     );
-// }
-
-// /* 🎥 Darshan Card */
-// const DarshanCard = ({ image, title, viewers }) => (
-//     <View style={styles.darshanCard}>
-//         <Image source={image} style={styles.darshanImage} />
-//         <View style={styles.liveBadge}>
-//             <Text style={styles.liveText}>● LIVE</Text>
-//         </View>
-//         <View style={styles.playIcon}>
-//             <Text style={{ fontSize: 26, color: '#fff' }}>▶</Text>
-//         </View>
-//         <Text style={styles.darshanTitle}>{title}</Text>
-//         <Text style={styles.viewers}>{viewers}</Text>
-//     </View>
-// );
-
-// const styles = StyleSheet.create({
-//     container: {
-//         flex: 1,
-//         backgroundColor: '#fff6ee',
-//     },
-
-//     /* Header */
-//     header: {
-//         backgroundColor: COLORS.APP_BACKGROUND,
-//         padding: 20,
-//         flexDirection: 'row',
-//         justifyContent: 'space-between',
-//         alignItems: 'center',
-//         borderBottomLeftRadius: 25,
-//         borderBottomRightRadius: 25,
-//     },
-//     logo: {
-//         fontSize: 22,
-//         fontWeight: 'bold',
-//         color: '#fff',
-//     },
-//     subText: {
-//         color: '#ffe6cc',
-//         marginTop: 4,
-//     },
-//     bell: {
-//         position: 'relative',
-//     },
-//     notificationDot: {
-//         position: 'absolute',
-//         right: -2,
-//         top: -2,
-//         width: 8,
-//         height: 8,
-//         backgroundColor: 'red',
-//         borderRadius: 4,
-//     },
-
-//     /* Search */
-//     searchBox: {
-//         backgroundColor: '#fff',
-//         margin: 16,
-//         padding: 14,
-//         borderRadius: 30,
-//         elevation: 3,
-//     },
-//     searchText: {
-//         color: '#999',
-//     },
-//     searchInput: {
-//         flex: 1,
-//         paddingVertical: 8,
-//         paddingLeft: 8,
-//     },
-//     /* Cards */
-//     card: {
-//         backgroundColor: '#fff',
-//         marginHorizontal: 16,
-//         padding: 16,
-//         borderRadius: 16,
-//         elevation: 2,
-//     },
-
-//     sectionTitle: {
-//         fontSize: 16,
-//         fontWeight: '700',
-//         marginBottom: 12,
-//     },
-
-//     /* Quick Services */
-//     quickRow: {
-//         flexDirection: 'row',
-//         justifyContent: 'space-between',
-//     },
-//     quickItem: {
-//         alignItems: 'center',
-//         width: '23%',
-//     },
-//     quickIcon: {
-//         width: 50,
-//         height: 50,
-//         borderRadius: 12,
-//         backgroundColor: '#fff2e6',
-//         justifyContent: 'center',
-//         alignItems: 'center',
-//         marginBottom: 6,
-//     },
-//     quickText: {
-//         fontSize: 12,
-//         fontWeight: '600',
-//     },
-
-//     /* Panchang */
-//     panchangCard: {
-//         backgroundColor: '#fff',
-//         margin: 16,
-//         padding: 16,
-//         borderRadius: 16,
-//         elevation: 2,
-//     },
-//     panchangHeader: {
-//         flexDirection: 'row',
-//         justifyContent: 'space-between',
-//     },
-//     date: {
-//         color: '#ff7a00',
-//         fontWeight: '600',
-//     },
-//     panchangRow: {
-//         flexDirection: 'row',
-//         justifyContent: 'space-between',
-//         marginTop: 8,
-//     },
-//     panchangText: {
-//         color: '#444',
-//     },
-
-//     /* Live Darshan */
-//     sectionHeader: {
-//         flexDirection: 'row',
-//         justifyContent: 'space-between',
-//         marginHorizontal: 16,
-//         marginBottom: 10,
-//     },
-//     link: {
-//         color: '#ff7a00',
-//         fontWeight: '600',
-//     },
-//     darshanCard: {
-//         width: width * 0.7,
-//         marginLeft: 16,
-//     },
-//     darshanImage: {
-//         width: '100%',
-//         height: 160,
-//         borderRadius: 16,
-//     },
-//     liveBadge: {
-//         position: 'absolute',
-//         top: 10,
-//         left: 10,
-//         backgroundColor: 'red',
-//         paddingHorizontal: 8,
-//         paddingVertical: 4,
-//         borderRadius: 6,
-//     },
-//     liveText: {
-//         color: '#fff',
-//         fontSize: 12,
-//         fontWeight: '700',
-//     },
-//     playIcon: {
-//         position: 'absolute',
-//         top: '40%',
-//         left: '45%',
-//     },
-//     darshanTitle: {
-//         marginTop: 8,
-//         fontWeight: '700',
-//     },
-//     viewers: {
-//         color: '#777',
-//         fontSize: 12,
-//     },
-// });
-
 import React from 'react';
 import {
     View,
@@ -297,7 +13,6 @@ import { SvgXml } from 'react-native-svg';
 import { COLORS } from '../theme/colors';
 import { Notification_SVG, Search_SVG } from '../constants/SVGImages';
 import Video from 'react-native-video';
-
 
 const { width } = Dimensions.get('window');
 
@@ -336,10 +51,13 @@ const DarshanCard = ({ videoUrl, title, viewers }) => (
     </View>
 );
 
-
 export default function HomeScreen() {
     return (
-        <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 200 }} showsVerticalScrollIndicator={false}>
+        <ScrollView
+            style={styles.container}
+            contentContainerStyle={{ paddingBottom: 200 }}
+            showsVerticalScrollIndicator={false}
+        >
             {/* 🔶 Header */}
             <View style={styles.header}>
                 <View>
@@ -347,9 +65,7 @@ export default function HomeScreen() {
                     <Text style={styles.subText}>Namaste, Devotee 🙏</Text>
                 </View>
                 <View style={styles.bell}>
-
                     <SvgXml xml={Notification_SVG} width={24} height={24} />
-
                 </View>
             </View>
 
@@ -368,11 +84,14 @@ export default function HomeScreen() {
             {/* ⚡ Quick Services */}
             <View style={styles.quickServicesCard}>
                 <Text style={styles.sectionTitle}>Quick Services</Text>
-                <View style={styles.quickRow}>
+
+                <View style={styles.quickGrid}>
                     {QUICK_SERVICES.map((item, index) => (
-                        <TouchableOpacity key={index} style={styles.quickItem}>
+                        <TouchableOpacity key={index} style={styles.quickBlock}>
                             <View style={styles.quickIcon}>
-                                <Text style={{ fontSize: 24 }}>{item.icon === '🏠' ? '🏡' : item.icon}</Text>
+                                <Text style={{ fontSize: 26 }}>
+                                    {item.icon === '🏠' ? '🏡' : item.icon}
+                                </Text>
                             </View>
                             <Text style={styles.quickText}>{item.title}</Text>
                         </TouchableOpacity>
@@ -408,7 +127,9 @@ export default function HomeScreen() {
 
             {/* 🔴 Live Darshan */}
             <View style={styles.sectionHeader}>
-                <Text style={[styles.sectionTitle, styles.liveDarshanTitle]}>Live Darshan <Text style={styles.liveDarshanDot}>🔴</Text></Text>
+                <Text style={[styles.sectionTitle, styles.liveDarshanTitle]}>
+                    Live Darshan <Text style={styles.liveDarshanDot}>🔴</Text>
+                </Text>
                 <TouchableOpacity>
                     <Text style={styles.link}>View All</Text>
                 </TouchableOpacity>
@@ -432,12 +153,10 @@ export default function HomeScreen() {
                 />
             </ScrollView>
 
-
             <View style={{ height: 30 }} />
         </ScrollView>
     );
 }
-
 
 const styles = StyleSheet.create({
     container: {
@@ -532,6 +251,39 @@ const styles = StyleSheet.create({
         shadowRadius: 1.41,
     },
 
+    quickGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+    },
+
+    quickBlock: {
+        width: '48%',
+        backgroundColor: COLORS.PRIMARY,
+        borderRadius: 14,
+        paddingVertical: 16,
+        paddingHorizontal: 10,
+        marginBottom: 12,
+        alignItems: 'center',
+    },
+
+    quickIcon: {
+        width: 55,
+        height: 55,
+        borderRadius: 15,
+
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+
+    quickText: {
+        fontSize: 13,
+        fontWeight: '600',
+        textAlign: 'center',
+        color: '#fff',
+    },
+
     sectionTitle: {
         fontSize: 16,
         fontWeight: '700',
@@ -539,32 +291,6 @@ const styles = StyleSheet.create({
         color: '#333',
     },
 
-    /* Quick Services */
-    quickRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-    },
-    quickItem: {
-        alignItems: 'center',
-        width: '20%',
-    },
-    quickIcon: {
-        width: 55,
-        height: 55,
-        borderRadius: 15,
-        backgroundColor: COLORS.LIGHT_ORANGE_BG,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 6,
-    },
-    quickText: {
-        fontSize: 12,
-        fontWeight: '600',
-        textAlign: 'center',
-        color: '#555',
-    },
-
-    /* Panchang */
     panchangCard: {
         backgroundColor: COLORS.WHITE,
         margin: 16,

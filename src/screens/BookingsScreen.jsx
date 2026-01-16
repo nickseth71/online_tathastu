@@ -32,15 +32,12 @@ const BookingsScreen = () => {
             {/* Active Bookings */}
             <Text style={styles.sectionTitle}>Active Bookings</Text>
 
-            {/* Booking Card - Confirmed */}
             <View style={styles.card}>
 
                 <Image
                     source={require("../assets/BannerImage1.jpg")}
                     style={styles.cardImage}
                 />
-
-
                 <View style={styles.statusConfirmed}>
                     <Text style={styles.statusText}>Confirmed</Text>
                 </View>
@@ -52,7 +49,10 @@ const BookingsScreen = () => {
                     <Text style={styles.cardText}>🕒 Dec 20, 2025 at 10:00 AM</Text>
                     <Text style={styles.cardText}>📍 Home Service</Text>
 
-                    <TouchableOpacity style={styles.detailsButton}>
+                    <TouchableOpacity
+                        style={styles.detailsButton}
+                        onPress={() => navigate("Details")}
+                    >
                         <Text style={styles.detailsButtonText}>View Details →</Text>
                     </TouchableOpacity>
                 </View>

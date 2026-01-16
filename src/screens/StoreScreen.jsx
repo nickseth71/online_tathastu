@@ -13,7 +13,7 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import { COLORS } from '../theme/colors';
 import { SvgXml } from 'react-native-svg';
-import { Cart_SVG, Search_SVG } from '../constants/SVGImages';
+import { Cart_SVG, Search_SVG, Start_Svg } from '../constants/SVGImages';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 48) / 2;
@@ -83,7 +83,8 @@ export default function StoreScreen() {
       </Text>
 
       <View style={styles.ratingRow}>
-        <Icon name="star" size={14} color="#f5a623" />
+        <Text>⭐</Text>
+        {/* <SvgXml xml={Start_Svg} /> */}
         <Text style={styles.rating}>
           {item.rating} ({item.reviews})
         </Text>

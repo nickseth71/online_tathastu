@@ -10,9 +10,11 @@ import {
   Dimensions,
   ScrollView,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
+import Config from 'react-native-config';
 import {
   GoogleSignin,
   statusCodes,
@@ -20,12 +22,20 @@ import {
 import { SvgXml } from 'react-native-svg';
 import { googleSvg } from '../constants/SVGImages';
 
-const WEB_CLIENT_ID = 'YOUR_WEB_CLIENT_ID_HERE';
+const WEB_CLIENT_ID = Config.WEB_CLIENT_ID;
+const SHOPIFY_STORE_URL = Config.SHOPIFY_STORE_URL;
+const SHOPIFY_ADMIN_TOKEN = Config.SHOPIFY_API_KEY;
 
+// console.log('Environment Variables:', {
+//   WEB_CLIENT_ID,
+//   SHOPIFY_STORE_URL,
+//   SHOPIFY_ADMIN_TOKEN,
+// });
 const { width, height } = Dimensions.get('window');
 
 export default function LoginOptions({ navigation }) {
   const [mobile, setMobile] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -33,17 +43,157 @@ export default function LoginOptions({ navigation }) {
     });
   }, []);
 
-  const handleGoogleSignIn = async () => {
-    try {
-      await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
 
-      Alert.alert(
-        'Login Success',
-        `Welcome, ${userInfo.user.name || userInfo.user.email}!`,
-        [{ text: 'OK', onPress: () => navigation.replace('Home') }],
+  // --- NEW: SEARCH FOR CUSTOMER BY PHONE ---
+  const checkCustomerExists = async (formattedPhone) => {
+    try {
+      const response = await fetch(
+        `https://${SHOPIFY_STORE_URL}/admin/api/2024-01/customers/search.json?query=phone:${formattedPhone}`,
+        {
+          method: 'GET',
+          headers: { 'X-Shopify-Access-Token': SHOPIFY_ADMIN_TOKEN },
+        }
       );
+      const data = await response.json();
+      return data.customers.length > 0 ? data.customers[0] : null;
     } catch (error) {
+      console.error('Search Error:', error);
+      return null;
+    }
+  };
+
+  // --- NEW: CREATE CUSTOMER WITH PHONE ---
+  const createShopifyCustomerByPhone = async (formattedPhone) => {
+    const payload = {
+      customer: {
+        phone: formattedPhone,
+        verified_email: false,
+        tags: 'Mobile-App-User',
+      },
+    };
+
+    try {
+      const response = await fetch(
+        `https://${SHOPIFY_STORE_URL}/admin/api/2024-01/customers.json`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Shopify-Access-Token': SHOPIFY_ADMIN_TOKEN,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+      const data = await response.json();
+      return data.customer;
+    } catch (error) {
+      console.error('Create Phone Customer Error:', error);
+      return null;
+    }
+  };
+
+  // --- UPDATED MOBILE LOGIN HANDLER ---
+  const handleMobileLogin = async () => {
+    if (mobile.length !== 10) {
+      return Alert.alert('Invalid', 'Please enter a 10-digit mobile number');
+    }
+
+    setLoading(true);
+    const formattedPhone = `+91${mobile}`;
+
+    try {
+      // 1. Check if user exists in Shopify
+      const existingUser = await checkCustomerExists(formattedPhone);
+
+      // 2. Trigger Firebase Phone Auth (Sends SMS)
+      const confirmation = await auth().signInWithPhoneNumber(formattedPhone);
+
+      // 3. Navigate to OTP Screen and pass the 'confirmation' object
+      navigation.navigate('OTPVerify', {
+        mobile: formattedPhone,
+        confirmation: confirmation, // Pass the Firebase confirmation object
+        isNewUser: !existingUser,
+        // Pass helper functions as params if you want to call them in next screen
+        // Or move the Shopify creation logic to the OTP screen
+      });
+
+    } catch (error) {
+      console.error('Firebase Auth Error:', error);
+      Alert.alert('Error', 'Unable to send SMS. Please check your number.');
+    } finally {
+      setLoading(false);
+    }
+  };
+  // --- SHOPIFY HELPER ---
+  const createShopifyCustomer = async googleUser => {
+    const customerPayload = {
+      customer: {
+        first_name: googleUser.givenName || '',
+        last_name: googleUser.familyName || '',
+        email: googleUser.email,
+        verified_email: true,
+        password: `Google_${googleUser.id}`,
+        password_confirmation: `Google_${googleUser.id}`,
+        send_email_welcome: false,
+        tags: 'Google-App-User',
+      },
+    };
+
+    try {
+      const response = await fetch(
+        `https://${SHOPIFY_STORE_URL}/admin/api/2024-01/customers.json`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Shopify-Access-Token': SHOPIFY_ADMIN_TOKEN,
+          },
+          body: JSON.stringify(customerPayload),
+        },
+      );
+
+      const data = await response.json();
+
+      if (response.status === 201) {
+        console.log('Shopify: Customer created successfully');
+      } else if (response.status === 422) {
+        console.log('Shopify: Customer already exists or invalid data.');
+      } else {
+        console.log('Shopify API Error:', data);
+      }
+    } catch (error) {
+      console.error('Network Error calling Shopify:', error);
+    }
+  };
+
+  // --- GOOGLE SIGN IN LOGIC ---
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
+
+      const response = await GoogleSignin.signIn();
+      const userInfo = response.data;
+
+      if (!userInfo || !userInfo.user) {
+        throw new Error('Google Sign-In failed. User info not received.');
+      }
+
+      // 🔥 CREATE CUSTOMER IN SHOPIFY
+      await createShopifyCustomer(userInfo.user);
+
+      const name = userInfo.user.name || userInfo.user.email;
+      setLoading(false);
+
+      Alert.alert('Login Success', `Welcome, ${name}`, [
+        { text: 'OK', onPress: () => navigation.replace('Main') },
+      ]);
+    } catch (error) {
+      setLoading(false);
+      console.log('Google Sign-In Error:', error);
+
       if (error.code === statusCodes.SIGN_IN_CANCELLED) return;
       if (error.code === statusCodes.IN_PROGRESS) return;
       if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE)
@@ -53,15 +203,7 @@ export default function LoginOptions({ navigation }) {
     }
   };
 
-  const handleMobileLogin = () => {
-    if (mobile.length !== 10)
-      return Alert.alert(
-        'Invalid',
-        'Please enter a valid 10-digit mobile number',
-      );
 
-    navigation.navigate('OTPScreen', { mobile });
-  };
 
   const handleSkip = () => navigation.replace('Main');
 
@@ -72,8 +214,6 @@ export default function LoginOptions({ navigation }) {
           contentContainerStyle={styles.scrollContainer}
           keyboardShouldPersistTaps="handled"
         >
-          {/* TOP AREA */}
-
           <Image
             source={require('../assets/logo.png')}
             style={styles.logo}
@@ -84,7 +224,6 @@ export default function LoginOptions({ navigation }) {
             Welcome to <Text style={{ color: '#f4850f' }}>Online Tathastu</Text>
           </Text>
 
-          {/* MIDDLE (CARD AREA) */}
           <View style={styles.card}>
             <Text style={styles.label}>Login with Mobile</Text>
 
@@ -118,13 +257,19 @@ export default function LoginOptions({ navigation }) {
             <TouchableOpacity
               style={styles.googleButton}
               onPress={handleGoogleSignIn}
+              disabled={loading}
             >
-              <SvgXml xml={googleSvg} width={22} height={22} />
-              <Text style={styles.googleText}>Continue with Google</Text>
+              {loading ? (
+                <ActivityIndicator color="#f4850f" />
+              ) : (
+                <>
+                  <SvgXml xml={googleSvg} width={22} height={22} />
+                  <Text style={styles.googleText}>Continue with Google</Text>
+                </>
+              )}
             </TouchableOpacity>
           </View>
 
-          {/* BOTTOM AREA */}
           <View style={styles.bottomArea}>
             <TouchableOpacity onPress={handleSkip} style={styles.skip}>
               <Text style={styles.skipText}>Skip for now →</Text>
@@ -144,9 +289,7 @@ export default function LoginOptions({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
+  safeArea: { flex: 1 },
   scrollContainer: {
     flexGrow: 1,
     justifyContent: 'space-between',
@@ -158,22 +301,18 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: height * 0.05,
   },
-
   title: {
     fontSize: width * 0.07,
     fontWeight: '800',
-    // marginTop: height * 0.03,
     color: '#222',
     textAlign: 'center',
     lineHeight: width * 0.09,
   },
-
   card: {
     width: '100%',
     backgroundColor: '#fff',
     borderRadius: 20,
     padding: width * 0.05,
-    // marginTop: height * 0.05,
     ...Platform.select({
       ios: {
         shadowColor: '#000',
@@ -181,19 +320,15 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 5 },
         shadowRadius: 15,
       },
-      android: {
-        elevation: 8,
-      },
+      android: { elevation: 8 },
     }),
   },
-
   label: {
     fontSize: width * 0.045,
     fontWeight: '600',
     marginBottom: 10,
     color: '#444',
   },
-
   mobileInput: {
     height: height * 0.065,
     borderWidth: 1,
@@ -203,7 +338,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: width * 0.045,
   },
-
   mobileButton: {
     height: height * 0.065,
     backgroundColor: '#f4850f',
@@ -211,33 +345,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 20,
   },
-
   mobileText: {
     color: '#fff',
     textAlign: 'center',
     fontSize: width * 0.045,
     fontWeight: '600',
   },
-
   separatorContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
   },
-
-  separatorLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#ddd',
-  },
-
+  separatorLine: { flex: 1, height: 1, backgroundColor: '#ddd' },
   separatorText: {
     marginHorizontal: 10,
     color: '#999',
     fontWeight: '600',
     fontSize: width * 0.035,
   },
-
   googleButton: {
     flexDirection: 'row',
     height: height * 0.065,
@@ -249,37 +374,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
-
-  googleText: {
-    fontSize: width * 0.045,
-    fontWeight: '500',
-    color: '#333',
-  },
-
-  bottomArea: {
-    alignItems: 'center',
-    marginBottom: height * 0.03,
-  },
-
-  skip: {
-    marginTop: 10,
-  },
-
+  googleText: { fontSize: width * 0.045, fontWeight: '500', color: '#333' },
+  bottomArea: { alignItems: 'center', marginBottom: height * 0.03 },
+  skip: { marginTop: 10 },
   skipText: {
     color: '#555',
     fontSize: width * 0.04,
     textDecorationLine: 'underline',
   },
-
   termsText: {
     marginTop: height * 0.05,
     fontSize: width * 0.03,
     textAlign: 'center',
     color: '#666',
   },
-
-  linkText: {
-    color: '#f4850f',
-    fontWeight: '700',
-  },
+  linkText: { color: '#f4850f', fontWeight: '700' },
 });

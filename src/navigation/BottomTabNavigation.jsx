@@ -38,7 +38,6 @@ export default function BottomTabs() {
                 tabBarActiveTintColor: '#f97316',
                 tabBarInactiveTintColor: '#6a7282',
                 tabBarStyle: {
-                    // backgroundColor: '#f97316',
                     position: 'absolute',
                     height: 60,
                     borderTopLeftRadius: 16,
