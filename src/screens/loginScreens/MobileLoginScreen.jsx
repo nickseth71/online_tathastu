@@ -13,7 +13,7 @@ export default function MobileLogin({ navigation }) {
 
   return (
     <View style={{ flex: 1, justifyContent: "center", padding: 20 }}>
-      
+
       <TextInput
         style={{
           borderWidth: 1, borderRadius: 10, padding: 15, fontSize: 18

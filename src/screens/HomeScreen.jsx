@@ -13,6 +13,7 @@ import { SvgXml } from 'react-native-svg';
 import { COLORS } from '../theme/colors';
 import { Notification_SVG, Search_SVG } from '../constants/SVGImages';
 import Video from 'react-native-video';
+import { navigate } from '../services/NavigationService';
 
 const { width } = Dimensions.get('window');
 
@@ -69,7 +70,6 @@ export default function HomeScreen() {
                 </View>
             </View>
 
-            {/* 🔍 Search - Positioned over the header's curve */}
             <View style={styles.searchBoxContainer}>
                 <View style={styles.searchBox}>
                     <SvgXml xml={Search_SVG} width={16} height={16} fill="#fff" />
@@ -87,11 +87,17 @@ export default function HomeScreen() {
 
                 <View style={styles.quickGrid}>
                     {QUICK_SERVICES.map((item, index) => (
-                        <TouchableOpacity key={index} style={styles.quickBlock}>
+                        <TouchableOpacity
+                            key={index}
+                            style={styles.quickBlock}
+                            onPress={() =>
+                                navigate('ServiceDetail', {
+                                    title: item.title,
+                                })
+                            }
+                        >
                             <View style={styles.quickIcon}>
-                                <Text style={{ fontSize: 26 }}>
-                                    {item.icon === '🏠' ? '🏡' : item.icon}
-                                </Text>
+                                <Text style={{ fontSize: 26 }}>{item.icon}</Text>
                             </View>
                             <Text style={styles.quickText}>{item.title}</Text>
                         </TouchableOpacity>
@@ -153,7 +159,7 @@ export default function HomeScreen() {
                 />
             </ScrollView>
 
-            <View style={{ height: 30 }} />
+            <View style={{ height: 20 }} />
         </ScrollView>
     );
 }

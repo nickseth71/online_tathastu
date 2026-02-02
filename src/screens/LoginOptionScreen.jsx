@@ -43,16 +43,15 @@ export default function LoginOptions({ navigation }) {
     });
   }, []);
 
-
   // --- NEW: SEARCH FOR CUSTOMER BY PHONE ---
-  const checkCustomerExists = async (formattedPhone) => {
+  const checkCustomerExists = async formattedPhone => {
     try {
       const response = await fetch(
         `https://${SHOPIFY_STORE_URL}/admin/api/2024-01/customers/search.json?query=phone:${formattedPhone}`,
         {
           method: 'GET',
           headers: { 'X-Shopify-Access-Token': SHOPIFY_ADMIN_TOKEN },
-        }
+        },
       );
       const data = await response.json();
       return data.customers.length > 0 ? data.customers[0] : null;
@@ -63,7 +62,7 @@ export default function LoginOptions({ navigation }) {
   };
 
   // --- NEW: CREATE CUSTOMER WITH PHONE ---
-  const createShopifyCustomerByPhone = async (formattedPhone) => {
+  const createShopifyCustomerByPhone = async formattedPhone => {
     const payload = {
       customer: {
         phone: formattedPhone,
@@ -82,7 +81,7 @@ export default function LoginOptions({ navigation }) {
             'X-Shopify-Access-Token': SHOPIFY_ADMIN_TOKEN,
           },
           body: JSON.stringify(payload),
-        }
+        },
       );
       const data = await response.json();
       return data.customer;
@@ -108,15 +107,11 @@ export default function LoginOptions({ navigation }) {
       // 2. Trigger Firebase Phone Auth (Sends SMS)
       const confirmation = await auth().signInWithPhoneNumber(formattedPhone);
 
-      // 3. Navigate to OTP Screen and pass the 'confirmation' object
       navigation.navigate('OTPVerify', {
         mobile: formattedPhone,
-        confirmation: confirmation, // Pass the Firebase confirmation object
+        confirmation: confirmation,
         isNewUser: !existingUser,
-        // Pass helper functions as params if you want to call them in next screen
-        // Or move the Shopify creation logic to the OTP screen
       });
-
     } catch (error) {
       console.error('Firebase Auth Error:', error);
       Alert.alert('Error', 'Unable to send SMS. Please check your number.');
@@ -134,7 +129,7 @@ export default function LoginOptions({ navigation }) {
         verified_email: true,
         password: `Google_${googleUser.id}`,
         password_confirmation: `Google_${googleUser.id}`,
-        send_email_welcome: false,
+        send_email_welcome: true,
         tags: 'Google-App-User',
       },
     };
@@ -202,8 +197,6 @@ export default function LoginOptions({ navigation }) {
       Alert.alert('Error', error.message);
     }
   };
-
-
 
   const handleSkip = () => navigation.replace('Main');
 

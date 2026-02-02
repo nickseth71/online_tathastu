@@ -7,6 +7,7 @@ import BottomTabs from './BottomTabNavigation'
 import DetailScreen from '../screens/subscreens/DetailScreen';
 import ProductDetailScreen from '../screens/subscreens/ProductDetailScreen';
 import BookPoojaScreen from '../screens/subscreens/BookPoojaScreen';
+import ServiceDetailScreen from '../screens/subscreens/ServiceDetailScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,6 +21,7 @@ export default function RootNavigation() {
             <Stack.Screen name="Details" component={DetailScreen} />
             <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
             <Stack.Screen name="BookPooja" component={BookPoojaScreen} />
+            <Stack.Screen name="ServiceDetail" component={ServiceDetailScreen} />
         </Stack.Navigator>
     );
 }
