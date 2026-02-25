@@ -1,20 +1,91 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
     StyleSheet,
     ScrollView,
     TouchableOpacity,
+    TextInput,
+    Modal,
+    Button,
+    Alert,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { SvgXml } from 'react-native-svg';
 import { COLORS } from '../theme/colors';
+import { useUser } from '../context/UserContext';
+import { useNavigation } from '@react-navigation/native';
+import {
+    profileSvg,
+    addressSvg,
+    wishlistSvg,
+    Pencil_SVG,
+    Logout_SVG,
+    helpSupport_SVG,
+    settings_SVG,
+    HoroScope_SVG,
+    Notification_SVG2,
+    Next_SVG,
+} from '../constants/SVGImages';
 
 export default function ProfileScreen() {
+    const navigation = useNavigation();
+    const { user, setUser } = useUser();
+
+    const [modalVisible, setModalVisible] = useState(false);
+    const [editableUser, setEditableUser] = useState(null);
+
+    useEffect(() => {
+        if (!user) {
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Login' }],
+            });
+        }
+    }, [user]);
+
+    if (!user) {
+        return (
+            <SafeAreaView style={styles.container}>
+                <Text style={{ margin: 20, textAlign: 'center' }}>
+                    Redirecting...
+                </Text>
+            </SafeAreaView>
+        );
+    }
+
+    const handleSave = async () => {
+        await setUser(editableUser);
+        await AsyncStorage.setItem('user', JSON.stringify(editableUser));
+        setModalVisible(false);
+    };
+
+    const logout = () => {
+        Alert.alert('Logout', 'Are you sure you want to logout?', [
+            { text: 'Cancel', style: 'cancel' },
+            {
+                text: 'Logout',
+                style: 'destructive',
+                onPress: async () => {
+                    await AsyncStorage.removeItem('user');
+                    setUser(null);
+                    navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'Login' }],
+                    });
+                },
+            },
+        ]);
+    };
+
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 200 }}>
-
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ paddingBottom: 200 }}
+            >
                 {/* Header */}
                 <View style={styles.header}>
                     <Text style={styles.headerTitle}>Profile</Text>
@@ -25,100 +96,233 @@ export default function ProfileScreen() {
                 <View style={styles.profileCard}>
                     <View style={styles.profileRow}>
                         <View style={styles.avatar}>
-                            <Text style={styles.avatarText}>U</Text>
+                            <Text style={styles.avatarText}>
+                                {user.name ? user.name[0].toUpperCase() : 'U'}
+                            </Text>
                         </View>
 
                         <View style={{ flex: 1 }}>
-                            <Text style={styles.userName}>User Name</Text>
-                            <Text style={styles.userInfo}>+91 XXXXX XXXXX</Text>
-                            <Text style={styles.userInfo}>email@example.com</Text>
+                            <Text style={styles.userName}>{user.name}</Text>
+                            <Text style={styles.userInfo}>
+                                {user.phone || 'No mobile Number'}
+                            </Text>
+                            <Text style={styles.userInfo}>{user.email}</Text>
+
+                            {user.dob && (
+                                <Text style={styles.userInfo}>
+                                    DOB: {user.dob}
+                                </Text>
+                            )}
+                            {user.gotra && (
+                                <Text style={styles.userInfo}>
+                                    Gotra: {user.gotra}
+                                </Text>
+                            )}
+                            {user.rashi && (
+                                <Text style={styles.userInfo}>
+                                    Rashi: {user.rashi}
+                                </Text>
+                            )}
                         </View>
 
-                        <TouchableOpacity style={styles.editIcon}>
-                            <Icon name="pencil" size={16} color="#fff" />
+                        <TouchableOpacity
+                            style={styles.editIcon}
+                            onPress={() => {
+                                setEditableUser({
+                                    ...user,
+                                    dob: user.dob || '',
+                                    gotra: user.gotra || '',
+                                    rashi: user.rashi || '',
+                                });
+                                setModalVisible(true);
+                            }}
+                        >
+                            <SvgXml xml={Pencil_SVG} width={26} height={26} />
                         </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.divider} />
-
-                    <View style={styles.statsRow}>
-                        <Stat label="Bookings" value="12" icon="ribbon-outline" />
-                        <Stat label="Favorites" value="8" icon="heart-outline" />
-                        <Stat label="Reviews" value="5" icon="star-outline" />
                     </View>
                 </View>
 
                 {/* Membership Card */}
                 <View style={styles.membershipCard}>
                     <View style={styles.membershipHeader}>
-                        <Text style={styles.membershipTitle}>Gold Member</Text>
+                        <Text style={styles.membershipTitle}>
+                            {user.membership}
+                        </Text>
                         <Icon name="medal-outline" size={22} color="#fff" />
                     </View>
 
                     <Text style={styles.benefitText}>Benefits Used</Text>
 
                     <View style={styles.progressBar}>
-                        <View style={styles.progressFill} />
+                        <View
+                            style={[
+                                styles.progressFill,
+                                { width: `${user.progress || 0}%` },
+                            ]}
+                        />
                     </View>
 
-                    <Text style={styles.progressText}>65%</Text>
+                    <Text style={styles.progressText}>
+                        {user.progress || 0}%
+                    </Text>
                 </View>
 
                 {/* Menu */}
                 <View style={styles.menuCard}>
-                    <MenuItem icon="person-outline" label="Edit Profile" />
-                    <MenuItem icon="location-outline" label="Saved Addresses" />
-                    <MenuItem icon="heart-outline" label="Wishlist" />
-                    <MenuItem icon="notifications-outline" label="Notifications" />
-                    <MenuItem icon="calendar-outline" label="Panchang & Horoscope" />
-                    <MenuItem icon="settings-outline" label="Settings" />
-                    <MenuItem icon="help&support" label="Help & Support" />
+                    <MenuItem
+                        iconSvg={Pencil_SVG}
+                        label="Edit Profile"
+                        onPress={() => {
+                            setEditableUser({ ...user });
+                            setModalVisible(true);
+                        }}
+                    />
+                    
 
+                    <MenuItem
+                        iconSvg={Notification_SVG2}
+                        label="Notifications"
+                        onPress={() => navigation.navigate('Notification')}
+                    />
+
+                    <MenuItem
+                        iconSvg={settings_SVG}
+                        label="Settings"
+                        onPress={() => navigation.navigate('Settings')}
+                    />
+                    <MenuItem iconSvg={addressSvg} label="Saved Addresses" />
+                    <MenuItem iconSvg={wishlistSvg} label="Wishlist" />
+                    
+                    <MenuItem iconSvg={HoroScope_SVG} label="Panchang & Horoscope" />
+                   
+                    <MenuItem iconSvg={helpSupport_SVG} label="Help & Support" onPress={() => navigation.navigate('Help&Support')} />
+
+                    <TouchableOpacity
+                        style={styles.logoutItem}
+                        onPress={logout}
+                    >
+                        <SvgXml xml={Logout_SVG} width={20} height={20} />
+                        <Text style={styles.logoutText}>Logout</Text>
+                    </TouchableOpacity>
                 </View>
-
             </ScrollView>
+
+            {/* Edit Modal */}
+            <Modal visible={modalVisible} animationType="slide" transparent>
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>
+                            Edit Profile
+                        </Text>
+
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Name"
+                            value={editableUser?.name}
+                            onChangeText={text =>
+                                setEditableUser(prev => ({
+                                    ...prev,
+                                    name: text,
+                                }))
+                            }
+                        />
+
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Phone"
+                            keyboardType="phone-pad"
+                            value={editableUser?.phone}
+                            onChangeText={text =>
+                                setEditableUser(prev => ({
+                                    ...prev,
+                                    phone: text,
+                                }))
+                            }
+                        />
+
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Email"
+                            keyboardType="email-address"
+                            value={editableUser?.email}
+                            onChangeText={text =>
+                                setEditableUser(prev => ({
+                                    ...prev,
+                                    email: text,
+                                }))
+                            }
+                        />
+
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Date of Birth"
+                            value={editableUser?.dob}
+                            onChangeText={text =>
+                                setEditableUser(prev => ({
+                                    ...prev,
+                                    dob: text,
+                                }))
+                            }
+                        />
+
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Gotra"
+                            value={editableUser?.gotra}
+                            onChangeText={text =>
+                                setEditableUser(prev => ({
+                                    ...prev,
+                                    gotra: text,
+                                }))
+                            }
+                        />
+
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Rashi"
+                            value={editableUser?.rashi}
+                            onChangeText={text =>
+                                setEditableUser(prev => ({
+                                    ...prev,
+                                    rashi: text,
+                                }))
+                            }
+                        />
+
+                        <View style={styles.buttonRow}>
+                            <Button
+                                title="Cancel"
+                                color="red"
+                                onPress={() => setModalVisible(false)}
+                            />
+                            <Button title="Save" onPress={handleSave} />
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 }
 
-/* Components */
-const Stat = ({ icon, value, label }) => (
-    <View style={styles.statItem}>
-        <Icon name={icon} size={18} color="#f97316" />
-        <Text style={styles.statValue}>{value}</Text>
-        <Text style={styles.statLabel}>{label}</Text>
-    </View>
-);
-
-const MenuItem = ({ icon, label }) => (
-    <TouchableOpacity style={styles.menuItem}>
-        <Icon name={icon} size={20} color="#f97316" />
+/* Menu Item */
+const MenuItem = ({ iconSvg, label, onPress }) => (
+    <TouchableOpacity style={styles.menuItem} onPress={onPress}>
+        <SvgXml xml={iconSvg} width={20} height={20} />
         <Text style={styles.menuText}>{label}</Text>
-        <Icon name="chevron-forward" size={18} color="#999" />
+        <SvgXml xml={Next_SVG} width={16} height={16} />
     </TouchableOpacity>
 );
 
 /* Styles */
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#f5f5f5',
-    },
-
+    container: { flex: 1, backgroundColor: '#f5f5f5' },
     header: {
         backgroundColor: COLORS.APP_BACKGROUND,
         padding: 20,
         paddingBottom: 60,
     },
-    headerTitle: {
-        color: '#fff',
-        fontSize: 22,
-        fontWeight: '700',
-    },
-    headerSub: {
-        color: '#ffe7d1',
-        marginTop: 4,
-    },
+    headerTitle: { color: '#fff', fontSize: 22, fontWeight: '700' },
+    headerSub: { color: '#ffe7d1', marginTop: 4 },
 
     profileCard: {
         backgroundColor: '#fff',
@@ -128,10 +332,8 @@ const styles = StyleSheet.create({
         padding: 16,
         elevation: 4,
     },
-    profileRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
+    profileRow: { flexDirection: 'row', alignItems: 'center' },
+
     avatar: {
         width: 56,
         height: 56,
@@ -141,49 +343,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginRight: 12,
     },
-    avatarText: {
-        color: '#fff',
-        fontSize: 22,
-        fontWeight: '700',
-    },
-    editIcon: {
-        backgroundColor: '#f97316',
-        padding: 6,
-        borderRadius: 20,
-    },
-    userName: {
-        fontSize: 16,
-        fontWeight: '700',
-    },
-    userInfo: {
-        color: '#777',
-        fontSize: 12,
-        marginTop: 2,
-    },
+    avatarText: { color: '#fff', fontSize: 22, fontWeight: '700' },
 
-    divider: {
-        height: 1,
-        backgroundColor: '#eee',
-        marginVertical: 12,
-    },
-
-    statsRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    statItem: {
-        alignItems: 'center',
-        flex: 1,
-    },
-    statValue: {
-        fontSize: 16,
-        fontWeight: '700',
-        marginTop: 4,
-    },
-    statLabel: {
-        fontSize: 12,
-        color: '#777',
-    },
+    userName: { fontSize: 16, fontWeight: '700' },
+    userInfo: { color: '#777', fontSize: 12, marginTop: 2 },
 
     membershipCard: {
         backgroundColor: '#f97316',
@@ -191,19 +354,9 @@ const styles = StyleSheet.create({
         borderRadius: 16,
         padding: 16,
     },
-    membershipHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    membershipTitle: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: '700',
-    },
-    benefitText: {
-        color: '#ffe7d1',
-        marginTop: 12,
-    },
+    membershipHeader: { flexDirection: 'row', justifyContent: 'space-between' },
+    membershipTitle: { color: '#fff', fontSize: 18, fontWeight: '700' },
+    benefitText: { color: '#ffe7d1', marginTop: 12 },
     progressBar: {
         height: 8,
         backgroundColor: '#ffa94d',
@@ -211,16 +364,8 @@ const styles = StyleSheet.create({
         marginTop: 6,
         overflow: 'hidden',
     },
-    progressFill: {
-        width: '65%',
-        height: '100%',
-        backgroundColor: '#fff',
-    },
-    progressText: {
-        color: '#fff',
-        marginTop: 6,
-        fontWeight: '600',
-    },
+    progressFill: { height: '100%', backgroundColor: '#fff' },
+    progressText: { color: '#fff', marginTop: 6, fontWeight: '600' },
 
     menuCard: {
         backgroundColor: '#fff',
@@ -229,14 +374,40 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         marginBottom: 30,
     },
-    menuItem: {
+    menuItem: { flexDirection: 'row', alignItems: 'center', padding: 14 },
+    menuText: { flex: 1, marginLeft: 12, fontSize: 14 },
+
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalContent: {
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 16,
+        width: '90%',
+    },
+    modalTitle: { fontWeight: '700', fontSize: 18, marginBottom: 10 },
+    input: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 8,
+        padding: 10,
+        marginVertical: 6,
+    },
+    buttonRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 10,
+    },
+    logoutItem: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 14,
+        borderTopWidth: 1,
+        borderColor: '#eee',
     },
-    menuText: {
-        flex: 1,
-        marginLeft: 12,
-        fontSize: 14,
-    },
+    logoutText: { marginLeft: 12, fontSize: 14, color: 'red' },
 });

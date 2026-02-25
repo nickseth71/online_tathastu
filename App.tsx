@@ -6,25 +6,22 @@ import { configureGoogleSignIn } from './src/config/GoogleConfig';
 import { StatusBar } from 'react-native';
 import { COLORS } from './src/theme/colors';
 import { navigationRef } from './src/services/NavigationService';
+import { UserProvider } from './src/context/UserContext';
 
 export default function App() {
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     configureGoogleSignIn();
-    setTimeout(() => setLoading(false), 2000);
   }, []);
 
-  if (loading) return <SplashScreen />;
-
   return (
-    <NavigationContainer ref={navigationRef}>
-      <StatusBar
-        barStyle="light-content"
-        backgroundColor={COLORS.APP_BACKGROUND}
-      />
-
-      <RootNavigation />
-    </NavigationContainer>
+    <UserProvider>
+      <NavigationContainer ref={navigationRef}>
+        <StatusBar
+          barStyle="light-content"
+          backgroundColor={COLORS.APP_BACKGROUND}
+        />
+        <RootNavigation />
+      </NavigationContainer>
+    </UserProvider>
   );
 }

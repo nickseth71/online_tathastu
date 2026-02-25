@@ -6,82 +6,104 @@ import {
     ScrollView,
     Image,
     TouchableOpacity,
-    Pressable,
+    SafeAreaView,
+    StatusBar,
 } from "react-native";
 import { COLORS } from "../theme/colors";
 import { navigate } from "../services/NavigationService";
 
+// Reusable Booking Card Component
+const BookingCard = ({ title, pandit, date, location, status, image }) => {
+    const isConfirmed = status === "Confirmed";
+
+    return (
+        <View style={styles.card}>
+            <Image source={image} style={styles.cardImage} />
+
+            {/* Soft Status Badge */}
+            <View style={[styles.statusBadge, isConfirmed ? styles.bgSuccess : styles.bgWarning]}>
+                <Text style={[styles.statusText, isConfirmed ? styles.textSuccess : styles.textWarning]}>
+                    ● {status}
+                </Text>
+            </View>
+
+            <View style={styles.cardContent}>
+                <Text style={styles.poojaTitle}>{title}</Text>
+
+                <View style={styles.infoRow}>
+                    <Text style={styles.infoIcon}>👤</Text>
+                    <Text style={styles.cardText}>{pandit}</Text>
+                </View>
+
+                <View style={styles.infoRow}>
+                    <Text style={styles.infoIcon}>🕒</Text>
+                    <Text style={styles.cardText}>{date}</Text>
+                </View>
+
+                <View style={styles.infoRow}>
+                    <Text style={styles.infoIcon}>📍</Text>
+                    <Text style={styles.cardText}>{location}</Text>
+                </View>
+
+                <TouchableOpacity
+                    style={styles.detailsButton}
+                    onPress={() => navigate("Details")}
+                    activeOpacity={0.7}
+                >
+                    <Text style={styles.detailsButtonText}>View Details</Text>
+                    <Text style={styles.arrowIcon}>→</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+    );
+};
+
 const BookingsScreen = () => {
     return (
-        <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 200 }} showsVerticalScrollIndicator={false}>
-            {/* Header */}
-            <View style={styles.header}>
-                <Text style={styles.headerTitle}>My Bookings</Text>
-                <Text style={styles.headerSubtitle}>
-                    Manage your pooja bookings
-                </Text>
+        <SafeAreaView style={styles.container}>
+            <StatusBar barStyle="light-content" backgroundColor={COLORS.APP_BACKGROUND} />
 
-                <Pressable
-                    style={styles.bookButton}
-                    onPress={() => navigate("BookPooja")}
-                >
-                    <Text style={styles.bookButtonText}>＋ Book New Pooja</Text>
-                </Pressable>
-            </View>
-
-            {/* Active Bookings */}
-            <Text style={styles.sectionTitle}>Active Bookings</Text>
-
-            <View style={styles.card}>
-
-                <Image
-                    source={require("../assets/BannerImage1.jpg")}
-                    style={styles.cardImage}
-                />
-                <View style={styles.statusConfirmed}>
-                    <Text style={styles.statusText}>Confirmed</Text>
-                </View>
-
-                <View style={styles.cardContent}>
-                    <Text style={styles.poojaTitle}>Satyanarayan Pooja</Text>
-
-                    <Text style={styles.cardText}>👤 Pandit Rajesh Sharma</Text>
-                    <Text style={styles.cardText}>🕒 Dec 20, 2025 at 10:00 AM</Text>
-                    <Text style={styles.cardText}>📍 Home Service</Text>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scrollPadding}
+            >
+                {/* Header */}
+                <View style={styles.header}>
+                    <Text style={styles.headerTitle}>My Bookings</Text>
+                    <Text style={styles.headerSubtitle}>Manage your spiritual journey</Text>
 
                     <TouchableOpacity
-                        style={styles.detailsButton}
-                        onPress={() => navigate("Details")}
+                        style={styles.bookButton}
+                        onPress={() => navigate("BookPooja")}
+                        activeOpacity={0.9}
                     >
-                        <Text style={styles.detailsButtonText}>View Details →</Text>
+                        <Text style={styles.bookButtonText}>＋ Book New Pooja</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
 
-            {/* Booking Card - Pending */}
-            <View style={styles.card}>
-                <Image
-                    source={require("../assets/BannerImage1.jpg")}
-                    style={styles.cardImage}
-                />
+                <View style={styles.contentBody}>
+                    <Text style={styles.sectionTitle}>Active Bookings</Text>
 
-                <View style={styles.statusPending}>
-                    <Text style={styles.statusText}>Pending</Text>
+                    <BookingCard
+                        title="Satyanarayan Pooja"
+                        pandit="Pandit Rajesh Sharma"
+                        date="Dec 20, 2025 • 10:00 AM"
+                        location="Home Service"
+                        status="Confirmed"
+                        image={require("../assets/BannerImage1.jpg")}
+                    />
+
+                    <BookingCard
+                        title="Griha Pravesh Pooja"
+                        pandit="Pandit Vijay Kumar"
+                        date="Dec 25, 2025 • 08:00 AM"
+                        location="New Home, Sector 45"
+                        status="Pending"
+                        image={require("../assets/BannerImage1.jpg")}
+                    />
                 </View>
-
-                <View style={styles.cardContent}>
-                    <Text style={styles.poojaTitle}>Griha Pravesh Pooja</Text>
-
-                    <Text style={styles.cardText}>👤 Pandit Vijay Kumar</Text>
-                    <Text style={styles.cardText}>🕒 Dec 25, 2025 at 8:00 AM</Text>
-                    <Text style={styles.cardText}>📍 New Home</Text>
-
-                    <TouchableOpacity style={styles.detailsButton}>
-                        <Text style={styles.detailsButtonText}>View Details →</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </SafeAreaView>
     );
 };
 
@@ -92,99 +114,133 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#FFF6EC",
     },
+    scrollPadding: {
+        paddingBottom: 100,
+    },
     header: {
         backgroundColor: COLORS.APP_BACKGROUND,
-        padding: 20,
-        paddingBottom: 10,
+        padding: 24,
+        paddingBottom: 60,
+        borderBottomLeftRadius: 32,
+        borderBottomRightRadius: 32,
     },
     headerTitle: {
         color: "#fff",
-        fontSize: 26,
-        fontWeight: "700",
+        fontSize: 28,
+        fontWeight: "800",
+        letterSpacing: -0.5,
     },
     headerSubtitle: {
-        color: "#FFE3CC",
+        color: "rgba(255,255,255,0.7)",
         marginTop: 4,
-        fontSize: 14,
+        fontSize: 15,
     },
     bookButton: {
         backgroundColor: "#fff",
-        marginTop: 15,
-        marginBottom: -30,
-        paddingVertical: 14,
-        borderRadius: 12,
+        position: "absolute",
+        bottom: -25,
+        left: 24,
+        right: 24,
+        height: 55,
+        borderRadius: 16,
         alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "row",
+        // Shadow for Button
+        elevation: 8,
+        shadowColor: COLORS.APP_BACKGROUND,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
     },
     bookButtonText: {
-        color: "#FF6A00",
+        color: COLORS.APP_BACKGROUND,
         fontSize: 16,
-        fontWeight: "600",
+        fontWeight: "700",
+    },
+    contentBody: {
+        marginTop: 40,
     },
     sectionTitle: {
-        margin: 20,
+        marginHorizontal: 24,
+        marginBottom: 16,
         fontSize: 18,
-        fontWeight: "600",
-        color: "#333",
+        fontWeight: "700",
+        color: "#1A1A1A",
     },
     card: {
         backgroundColor: "#fff",
         marginHorizontal: 20,
         marginBottom: 20,
-        borderRadius: 16,
+        borderRadius: 24,
         overflow: "hidden",
+        borderWidth: 1,
+        borderColor: "#F0F0F0",
+        // Premium Shadow
         elevation: 4,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
     },
     cardImage: {
         width: "100%",
-        height: 150,
+        height: 140,
     },
-    statusConfirmed: {
+    statusBadge: {
         position: "absolute",
         top: 12,
         right: 12,
-        backgroundColor: "#2ECC71",
-        paddingHorizontal: 10,
-        paddingVertical: 4,
-        borderRadius: 20,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 12,
     },
-    statusPending: {
-        position: "absolute",
-        top: 12,
-        right: 12,
-        backgroundColor: "#F1C40F",
-        paddingHorizontal: 10,
-        paddingVertical: 4,
-        borderRadius: 20,
-    },
-    statusText: {
-        color: "#fff",
-        fontSize: 12,
-        fontWeight: "600",
-    },
+    bgSuccess: { backgroundColor: "#E8F8EF" },
+    bgWarning: { backgroundColor: "#FEF9E7" },
+    textSuccess: { color: "#27AE60", fontWeight: "700", fontSize: 12 },
+    textWarning: { color: "#F39C12", fontWeight: "700", fontSize: 12 },
+
     cardContent: {
-        padding: 16,
+        padding: 20,
     },
     poojaTitle: {
-        fontSize: 18,
-        fontWeight: "700",
+        fontSize: 20,
+        fontWeight: "800",
+        marginBottom: 12,
+        color: "#1A1A1A",
+    },
+    infoRow: {
+        flexDirection: "row",
+        alignItems: "center",
         marginBottom: 8,
-        color: "#222",
+    },
+    infoIcon: {
+        fontSize: 14,
+        marginRight: 8,
+        width: 20,
     },
     cardText: {
         fontSize: 14,
-        color: "#555",
-        marginBottom: 4,
+        color: "#666",
+        fontWeight: "500",
     },
     detailsButton: {
-        backgroundColor: "#FF6A00",
-        marginTop: 14,
-        paddingVertical: 12,
-        borderRadius: 10,
+        backgroundColor: "#F5F5F5",
+        marginTop: 16,
+        paddingVertical: 14,
+        paddingHorizontal: 20,
+        borderRadius: 14,
+        flexDirection: "row",
+        justifyContent: "space-between",
         alignItems: "center",
     },
     detailsButtonText: {
-        color: "#fff",
-        fontWeight: "600",
+        color: "#333",
+        fontWeight: "700",
         fontSize: 15,
     },
+    arrowIcon: {
+        color: "#333",
+        fontSize: 18,
+    }
 });

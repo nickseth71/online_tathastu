@@ -110,3 +110,43 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+
+
+
+
+
+// export default function OTPVerify({ route, navigation }) {
+//   const { mobile, confirmation, isNewUser } = route.params;
+//   const { setUser } = useUser();
+//   const [code, setCode] = useState('');
+
+//   const verifyOTP = async () => {
+//     try {
+//       await confirmation.confirm(code);
+
+//       const userData = {
+//         name: '',
+//         phone: mobile,
+//         email: '',
+//         bookings: 0,
+//         favorites: 0,
+//         reviews: 0,
+//         membership: 'Free',
+//         progress: 0,
+//       };
+
+//       await setUser(userData);
+
+//       navigation.replace('Main');
+//     } catch (error) {
+//       Alert.alert('Invalid OTP');
+//     }
+//   };
+
+//   return (
+//     <View>
+//       <TextInput value={code} onChangeText={setCode} />
+//       <Button title="Verify" onPress={verifyOTP} />
+//     </View>
+//   );
+// }

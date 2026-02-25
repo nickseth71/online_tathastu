@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUser } from '../context/UserContext';
 import {
   View,
   Text,
@@ -34,6 +36,7 @@ const SHOPIFY_ADMIN_TOKEN = Config.SHOPIFY_API_KEY;
 const { width, height } = Dimensions.get('window');
 
 export default function LoginOptions({ navigation }) {
+  const { setUser } = useUser();
   const [mobile, setMobile] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -165,36 +168,30 @@ export default function LoginOptions({ navigation }) {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      await GoogleSignin.hasPlayServices({
-        showPlayServicesUpdateDialog: true,
-      });
-
+      await GoogleSignin.hasPlayServices();
       const response = await GoogleSignin.signIn();
-      const userInfo = response.data;
+      const googleUser = response.data.user;
 
-      if (!userInfo || !userInfo.user) {
-        throw new Error('Google Sign-In failed. User info not received.');
-      }
+      await createShopifyCustomer(googleUser);
 
-      // 🔥 CREATE CUSTOMER IN SHOPIFY
-      await createShopifyCustomer(userInfo.user);
+      const appUser = {
+        name: googleUser.name,
+        email: googleUser.email,
+        phone: googleUser.phoneNumber || '',
+        bookings: 0,
+        favorites: 0,
+        reviews: 0,
+        membership: 'Free',
+        progress: 0,
+      };
 
-      const name = userInfo.user.name || userInfo.user.email;
-      setLoading(false);
+      await setUser(appUser);
 
-      Alert.alert('Login Success', `Welcome, ${name}`, [
-        { text: 'OK', onPress: () => navigation.replace('Main') },
-      ]);
+      navigation.replace('Main');
     } catch (error) {
+      console.log(error);
+    } finally {
       setLoading(false);
-      console.log('Google Sign-In Error:', error);
-
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) return;
-      if (error.code === statusCodes.IN_PROGRESS) return;
-      if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE)
-        return Alert.alert('Error', 'Google Play Services outdated');
-
-      Alert.alert('Error', error.message);
     }
   };
 

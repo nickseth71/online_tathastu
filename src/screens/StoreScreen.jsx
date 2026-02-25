@@ -382,12 +382,13 @@ import {
   TextInput,
   ScrollView,
   ActivityIndicator,
-  RefreshControl
+  RefreshControl,
+  Modal
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { COLORS } from '../theme/colors';
 import { SvgXml } from 'react-native-svg';
-import { Cart_SVG, Search_SVG } from '../constants/SVGImages';
+import { Cart_SVG, Search_SVG, wishlistSvg } from '../constants/SVGImages';
 import Config from 'react-native-config';
 
 const { width } = Dimensions.get('window');
@@ -397,17 +398,34 @@ const SHOPIFY_ADMIN_TOKEN = Config.SHOPIFY_API_KEY;
 
 
 export default function StoreScreen() {
+  const [cart, setCart] = useState([]);
+  const [isCartVisible, setIsCartVisible] = useState(false);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  // 1. Optimized Fetch Function
+
+  const addToCart = (product) => {
+    setCart((currentCart) => {
+      // Check if item already exists
+      const exists = currentCart.find((item) => item.id === product.id);
+
+      if (exists) {
+        alert(`${product.name} is already in your cart!`);
+        return currentCart;
+      }
+
+      alert(`${product.name} added to cart!`);
+      return [...currentCart, { ...product, quantity: 1 }];
+    });
+  };
+
   const fetchProducts = async () => {
     try {
       setLoading(true);
 
-      // 1. Verify token is actually loaded
+
       if (!SHOPIFY_ADMIN_TOKEN) {
         console.error("Config Error: SHOPIFY_API_KEY is undefined. Check your .env file.");
         setLoading(false);
@@ -427,7 +445,7 @@ export default function StoreScreen() {
 
       if (json.errors) {
         console.error("Shopify API Error:", json.errors);
-        // This will tell you if it's a scope issue or a token issue
+
         setProducts([]);
         return;
       }
@@ -482,7 +500,7 @@ export default function StoreScreen() {
       )}
 
       <TouchableOpacity style={styles.wishlist}>
-        <Icon name="heart-outline" size={18} color="#ff6b6b" />
+        <SvgXml xml={wishlistSvg} width={18} height={18} />
       </TouchableOpacity>
 
       <Image
@@ -503,7 +521,11 @@ export default function StoreScreen() {
         {item.oldPrice && <Text style={styles.oldPrice}>₹{item.oldPrice}</Text>}
       </View>
 
-      <TouchableOpacity style={styles.button} activeOpacity={0.7}>
+      <TouchableOpacity
+        style={styles.button}
+        activeOpacity={0.7}
+        onPress={() => addToCart(item)}
+      >
         <Text style={styles.buttonText}>Add to Cart</Text>
       </TouchableOpacity>
     </View>
@@ -517,8 +539,13 @@ export default function StoreScreen() {
             <Text style={styles.title}>Spiritual Shop</Text>
             <Text style={styles.subtitle}>Authentic pooja essentials</Text>
           </View>
-          <TouchableOpacity style={styles.cartBtn}>
+          <TouchableOpacity style={styles.cartBtn} onPress={() => setIsCartVisible(true)}>
             <SvgXml xml={Cart_SVG} width={28} height={28} />
+            {cart.length > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{cart.length}</Text>
+              </View>
+            )}
           </TouchableOpacity>
         </View>
 
@@ -573,6 +600,45 @@ export default function StoreScreen() {
           }
         />
       )}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isCartVisible}
+        onRequestClose={() => setIsCartVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Your Cart ({cart.length})</Text>
+              <TouchableOpacity onPress={() => setIsCartVisible(false)}>
+                <Icon name="close" size={24} color="#333" />
+              </TouchableOpacity>
+            </View>
+
+            {cart.length === 0 ? (
+              <Text style={styles.emptyCartText}>Your cart is empty!</Text>
+            ) : (
+              <FlatList
+                data={cart}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <View style={styles.cartItem}>
+                    <Image source={item.image} style={styles.cartItemImage} />
+                    <View style={styles.cartItemDetails}>
+                      <Text style={styles.cartItemName}>{item.name}</Text>
+                      <Text style={styles.cartItemPrice}>₹{item.price}</Text>
+                    </View>
+                  </View>
+                )}
+              />
+            )}
+
+            <TouchableOpacity style={styles.checkoutBtn}>
+              <Text style={styles.buttonText}>Proceed to Checkout</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -612,5 +678,80 @@ const styles = StyleSheet.create({
   buttonText: { color: '#fff', fontWeight: '600' },
   discountBadge: { position: 'absolute', top: 8, left: 8, backgroundColor: '#ff3b3b', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6, zIndex: 1 },
   discountText: { color: '#fff', fontSize: 10, fontWeight: 'bold' },
-  wishlist: { position: 'absolute', top: 8, right: 8, zIndex: 1, backgroundColor: '#fff', borderRadius: 15, padding: 4 }
+  wishlist: { position: 'absolute', top: 8, right: 8, zIndex: 1, backgroundColor: '#fff', borderRadius: 15, padding: 4 },
+  badge: {
+    position: 'absolute',
+    right: -5,
+    top: -5,
+    backgroundColor: 'red',
+    borderRadius: 10,
+    width: 18,
+    height: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badgeText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    padding: 20,
+    height: '70%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  cartItem: {
+    flexDirection: 'row',
+    marginBottom: 15,
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    paddingBottom: 10,
+  },
+  cartItemImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+  },
+  cartItemDetails: {
+    marginLeft: 15,
+  },
+  cartItemName: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  cartItemPrice: {
+    color: '#ff6a00',
+    fontWeight: 'bold',
+  },
+  emptyCartText: {
+    textAlign: 'center',
+    marginTop: 50,
+    fontSize: 16,
+    color: '#888',
+  },
+  checkoutBtn: {
+    backgroundColor: '#ff6a00',
+    padding: 15,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 10,
+  },
 });
