@@ -669,7 +669,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
     root: { flex: 1, backgroundColor: '#FFF6EE' },
-    scrollContent: { paddingBottom: 40 },
+    scrollContent: { paddingBottom: 100 },
     header: {
         backgroundColor: COLORS.APP_BACKGROUND,
         padding: 20,
