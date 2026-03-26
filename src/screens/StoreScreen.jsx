@@ -80,7 +80,7 @@ export default function StoreScreen() {
           name: item.title,
           description:
             item.body_html?.replace(/<[^>]*>?/gm, '') ||
-            'No description available.', // Clean HTML tags
+            'No description available.',
           price: item.variants[0]?.price || '0',
           oldPrice: item.variants[0]?.compare_at_price || null,
           discount: item.variants[0]?.compare_at_price

@@ -2,14 +2,13 @@ import React, { useEffect } from 'react';
 import {
   View,
   StyleSheet,
-  ActivityIndicator,
   Image,
   StatusBar,
 } from 'react-native';
 import Sound from 'react-native-sound';
 import { COLORS } from '../theme/colors';
 
-export default function SplashScreen() {
+export default function SplashScreen({ onFinish }) {
   useEffect(() => {
     Sound.setCategory('Playback');
 
@@ -19,18 +18,27 @@ export default function SplashScreen() {
       error => {
         if (error) {
           console.log('Error loading sound:', error);
+          setTimeout(onFinish, 1000);
           return;
         }
-        splashSound.play(success => {
-          if (!success) {
-            console.log('Playback failed');
-          }
+
+        splashSound.setVolume(0.7);
+        splashSound.play();
+
+
+        const timer = setTimeout(() => {
+          splashSound.stop(() => {
+            splashSound.release();
+            onFinish();
+          });
+        }, 2000);
+
+        return () => {
+          clearTimeout(timer);
           splashSound.release();
-        });
+        };
       },
     );
-
-    return () => splashSound.release();
   }, []);
 
   return (
@@ -39,11 +47,12 @@ export default function SplashScreen() {
         barStyle="light-content"
         backgroundColor={COLORS.APP_BACKGROUND}
       />
+
       <Image
         source={require('../assets/previewImage.png')}
-        style={{ width: 300, height: 300 }}
+        style={styles.image}
+        resizeMode="cover"
       />
-      {/* <ActivityIndicator size="large" color="#000" style={{ marginTop: 30 }} /> */}
     </View>
   );
 }
@@ -54,5 +63,9 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.APP_BACKGROUND,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  image: {
+    width: 300,
+    height: 300,
   },
 });

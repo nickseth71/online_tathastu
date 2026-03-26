@@ -1,4 +1,3 @@
-import React from "react";
 import {
     View,
     Text,
@@ -6,11 +5,12 @@ import {
     ScrollView,
     Image,
     TouchableOpacity,
-    SafeAreaView,
     StatusBar,
+    Pressable,
 } from "react-native";
 import { COLORS } from "../theme/colors";
 import { navigate } from "../services/NavigationService";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 // Reusable Booking Card Component
 const BookingCard = ({ title, pandit, date, location, status, image }) => {
@@ -19,7 +19,6 @@ const BookingCard = ({ title, pandit, date, location, status, image }) => {
     return (
         <View style={styles.card}>
             <Image source={image} style={styles.cardImage} />
-
             {/* Soft Status Badge */}
             <View style={[styles.statusBadge, isConfirmed ? styles.bgSuccess : styles.bgWarning]}>
                 <Text style={[styles.statusText, isConfirmed ? styles.textSuccess : styles.textWarning]}>
@@ -72,13 +71,13 @@ const BookingsScreen = () => {
                     <Text style={styles.headerTitle}>My Bookings</Text>
                     <Text style={styles.headerSubtitle}>Manage your spiritual journey</Text>
 
-                    <TouchableOpacity
+                    <Pressable
                         style={styles.bookButton}
                         onPress={() => navigate("BookPooja")}
                         activeOpacity={0.9}
                     >
                         <Text style={styles.bookButtonText}>＋ Book New Pooja</Text>
-                    </TouchableOpacity>
+                    </Pressable>
                 </View>
 
                 <View style={styles.contentBody}>

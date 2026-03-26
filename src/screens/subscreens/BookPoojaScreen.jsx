@@ -17,31 +17,40 @@ const BookPoojaScreen = ({ navigation }) => {
     const [activeTab, setActiveTab] = useState("All Pujas");
 
     const POOJAS = [
-        {
-            id: "1",
-            title: "Satyanarayan Pooja",
-            desc: "For prosperity and blessings",
-            price: "₹2100 • 2–3 hours",
-            category: "All",
-            image: require("../../assets/BannerImage1.jpg"),
-        },
-        {
-            id: "2",
-            title: "Ganesh Pooja",
-            desc: "Remove obstacles and bring success",
-            price: "₹1800 • 1–2 hours",
-            category: "Festivals",
-            image: require("../../assets/BannerImage1.jpg"),
-        },
-        {
-            id: "3",
-            title: "Shani Shanti Pooja",
-            desc: "Reduce malefic effects",
-            price: "₹2800 • 2–3 hours",
-            category: "Graha Shanti",
-            image: require("../../assets/BannerImage1.jpg"),
-        },
-    ];
+    {
+        id: "1",
+        title: "Satyanarayan Pooja",
+        desc: "For prosperity and blessings",
+        price: "₹2100 • 2–3 hours",
+        category: "All",
+        image: require("../../assets/BannerImage1.jpg"),
+
+        about: "Satyanarayan Pooja is a sacred ritual performed to invoke divine blessings and bring positivity.",
+
+        benefits: [
+            "Removes obstacles",
+            "Brings prosperity",
+            "Creates positive energy",
+            "Ensures family well-being"
+        ]
+    },
+    {
+        id: "2",
+        title: "Ganesh Pooja",
+        desc: "Remove obstacles and bring success",
+        price: "₹1800 • 1–2 hours",
+        category: "Festivals",
+        image: require("../../assets/BannerImage1.jpg"),
+
+        about: "Ganesh Pooja is performed to seek blessings of Lord Ganesha.",
+
+        benefits: [
+            "Removes obstacles",
+            "Brings success",
+            "Improves focus"
+        ]
+    }
+];
 
     const filteredPoojas = POOJAS.filter(pooja =>
         activeTab === "All Pujas" || pooja.category === activeTab
@@ -103,23 +112,28 @@ const BookPoojaScreen = ({ navigation }) => {
                 data={filteredPoojas}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item: pooja }) => (
-                    <View style={styles.card}>
-                        <Image source={pooja.image} style={styles.cardImage} />
+                    <TouchableOpacity
+                        activeOpacity={0.8}
+                        onPress={() => navigation.navigate("PoojaDetails", { pooja })}
+                    >
+                        <View style={styles.card}>
+                            <Image source={pooja.image} style={styles.cardImage} />
 
-                        <View style={styles.cardContent}>
-                            <Text style={styles.title}>{pooja.title}</Text>
-                            <Text style={styles.desc}>{pooja.desc}</Text>
+                            <View style={styles.cardContent}>
+                                <Text style={styles.title}>{pooja.title}</Text>
+                                <Text style={styles.desc}>{pooja.desc}</Text>
 
-                            <View style={styles.priceRow}>
-                                <Text style={styles.price}>
-                                    {pooja.price.split('•')[0].trim()}
-                                </Text>
-                                <Text style={styles.duration}>
-                                    {pooja.price.split('•')[1]?.trim()}
-                                </Text>
+                                <View style={styles.priceRow}>
+                                    <Text style={styles.price}>
+                                        {pooja.price.split('•')[0].trim()}
+                                    </Text>
+                                    <Text style={styles.duration}>
+                                        {pooja.price.split('•')[1]?.trim()}
+                                    </Text>
+                                </View>
                             </View>
                         </View>
-                    </View>
+                    </TouchableOpacity>
                 )}
                 contentContainerStyle={styles.poojaListContainer}
                 showsVerticalScrollIndicator={false}

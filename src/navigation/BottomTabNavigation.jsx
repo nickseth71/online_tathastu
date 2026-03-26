@@ -7,13 +7,14 @@ import ProfileScreen from '../screens/ProfileScreen';
 import BlogsScreen from '../screens/BlogScreen';
 import StoreScreen from '../screens/StoreScreen';
 import BookingsScreen from '../screens/BookingsScreen';
-
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { lotusSvg, profileSvg, storeSvg, blogsSvg, BookingSvg } from '../constants/SVGImages';
 
 
 const Tab = createBottomTabNavigator();
 
 export default function BottomTabs() {
+    const insets = useSafeAreaInsets();
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
@@ -21,15 +22,15 @@ export default function BottomTabs() {
                 tabBarIcon: ({ color }) => {
                     const IconSize = 30;
                     switch (route.name) {
-                        case 'Home':
+                        case 'होम':
                             return <SvgXml xml={lotusSvg} width={IconSize} height={IconSize} fill={color} />;
-                        case 'Bookings':
+                        case 'बुकिंग्स':
                             return <SvgXml xml={BookingSvg} width={IconSize} height={IconSize} fill={color} />;
-                        case 'Profile':
+                        case 'प्रोफाइल':
                             return <SvgXml xml={profileSvg} width={IconSize} height={IconSize} fill={color} />;
-                        case 'Store':
+                        case 'स्टोर':
                             return <SvgXml xml={storeSvg} width={IconSize} height={IconSize} fill={color} />;
-                        case 'Blogs':
+                        case 'ब्लॉग':
                             return <SvgXml xml={blogsSvg} width={IconSize} height={IconSize} fill={color} />;
                         default:
                             return null;
@@ -39,10 +40,10 @@ export default function BottomTabs() {
                 tabBarInactiveTintColor: '#6a7282',
                 tabBarStyle: {
                     position: 'absolute',
-                    height: 60,
+                    height: 60 + insets.bottom,
                     borderTopLeftRadius: 16,
                     borderTopRightRadius: 16,
-                    paddingBottom: 10,
+                    paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
                     borderTopWidth: 0,
                 },
                 tabBarLabelStyle: {
@@ -52,11 +53,11 @@ export default function BottomTabs() {
             })}
         >
 
-            <Tab.Screen name="Home" component={HomeScreen} />
-            <Tab.Screen name="Bookings" component={BookingsScreen} />
-            <Tab.Screen name="Blogs" component={BlogsScreen} />
-            <Tab.Screen name="Store" component={StoreScreen} />
-            <Tab.Screen name="Profile" component={ProfileScreen} />
+            <Tab.Screen name="होम" component={HomeScreen} />
+            <Tab.Screen name="बुकिंग्स" component={BookingsScreen} />
+            <Tab.Screen name="ब्लॉग" component={BlogsScreen} />
+            <Tab.Screen name="स्टोर" component={StoreScreen} />
+            <Tab.Screen name="प्रोफाइल" component={ProfileScreen} />
         </Tab.Navigator>
     );
 }

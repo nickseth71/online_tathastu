@@ -198,83 +198,86 @@ export default function LoginOptions({ navigation }) {
   const handleSkip = () => navigation.replace('Main');
 
   return (
-    <LinearGradient colors={['#ffe8d3', '#fff']} style={{ flex: 1 }}>
-      <SafeAreaView style={styles.safeArea}>
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled"
-        >
-          <Image
-            source={require('../assets/logo.png')}
-            style={styles.logo}
-            resizeMode="contain"
+
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContainer}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Image
+          source={require('../assets/logo.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+
+        <Text style={styles.title}>
+          <Text style={{ color: '#f4850f', marginRight: 5 }}>
+            ऑनलाइन तथास्तु
+          </Text>
+          {' '}में आपका स्वागत है
+        </Text>
+
+        <View style={styles.card}>
+          <Text style={styles.label}>Login with Mobile</Text>
+
+          <TextInput
+            style={styles.mobileInput}
+            placeholder="Enter Mobile Number"
+            placeholderTextColor={'#a49999ff'}
+            keyboardType="number-pad"
+            maxLength={10}
+            value={mobile}
+            onChangeText={setMobile}
           />
 
-          <Text style={styles.title}>
-            Welcome to <Text style={{ color: '#f4850f' }}>Online Tathastu</Text>
+          <TouchableOpacity
+            style={[
+              styles.mobileButton,
+              mobile.length === 10 ? {} : { opacity: 0.5 },
+            ]}
+            onPress={handleMobileLogin}
+            disabled={mobile.length !== 10}
+          >
+            <Text style={styles.mobileText}>Submit</Text>
+          </TouchableOpacity>
+
+          <View style={styles.separatorContainer}>
+            <View style={styles.separatorLine} />
+            <Text style={styles.separatorText}>OR</Text>
+            <View style={styles.separatorLine} />
+          </View>
+
+          <TouchableOpacity
+            style={styles.googleButton}
+            onPress={handleGoogleSignIn}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#f4850f" />
+            ) : (
+              <>
+                <SvgXml xml={googleSvg} width={22} height={22} />
+                <Text style={styles.googleText}>Continue with Google</Text>
+              </>
+            )}
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.bottomArea}>
+          <TouchableOpacity onPress={handleSkip} style={styles.skip}>
+            <Text style={styles.skipText}>Skip for now →</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.termsText}>
+            By continuing, you agree to our
+            <Text style={styles.linkText}> Terms </Text>
+            and
+            <Text style={styles.linkText}> Privacy Policy</Text>.
           </Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
 
-          <View style={styles.card}>
-            <Text style={styles.label}>Login with Mobile</Text>
-
-            <TextInput
-              style={styles.mobileInput}
-              placeholder="Enter Mobile Number"
-              placeholderTextColor={'#a49999ff'}
-              keyboardType="number-pad"
-              maxLength={10}
-              value={mobile}
-              onChangeText={setMobile}
-            />
-
-            <TouchableOpacity
-              style={[
-                styles.mobileButton,
-                mobile.length === 10 ? {} : { opacity: 0.5 },
-              ]}
-              onPress={handleMobileLogin}
-              disabled={mobile.length !== 10}
-            >
-              <Text style={styles.mobileText}>Submit</Text>
-            </TouchableOpacity>
-
-            <View style={styles.separatorContainer}>
-              <View style={styles.separatorLine} />
-              <Text style={styles.separatorText}>OR</Text>
-              <View style={styles.separatorLine} />
-            </View>
-
-            <TouchableOpacity
-              style={styles.googleButton}
-              onPress={handleGoogleSignIn}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator color="#f4850f" />
-              ) : (
-                <>
-                  <SvgXml xml={googleSvg} width={22} height={22} />
-                  <Text style={styles.googleText}>Continue with Google</Text>
-                </>
-              )}
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.bottomArea}>
-            <TouchableOpacity onPress={handleSkip} style={styles.skip}>
-              <Text style={styles.skipText}>Skip for now →</Text>
-            </TouchableOpacity>
-
-            <Text style={styles.termsText}>
-              By continuing, you agree to our
-              <Text style={styles.linkText}> Terms </Text>
-              and
-              <Text style={styles.linkText}> Privacy Policy</Text>.
-            </Text>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </LinearGradient>
   );
 }
 

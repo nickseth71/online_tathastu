@@ -90,6 +90,7 @@ export default function ProfileScreen() {
                 <View style={styles.header}>
                     <Text style={styles.headerTitle}>Profile</Text>
                     <Text style={styles.headerSub}>Manage your account</Text>
+
                 </View>
 
                 {/* Profile Card */}
@@ -177,7 +178,7 @@ export default function ProfileScreen() {
                             setModalVisible(true);
                         }}
                     />
-                    
+
 
                     <MenuItem
                         iconSvg={Notification_SVG2}
@@ -192,9 +193,9 @@ export default function ProfileScreen() {
                     />
                     <MenuItem iconSvg={addressSvg} label="Saved Addresses" />
                     <MenuItem iconSvg={wishlistSvg} label="Wishlist" />
-                    
+
                     <MenuItem iconSvg={HoroScope_SVG} label="Panchang & Horoscope" />
-                   
+
                     <MenuItem iconSvg={helpSupport_SVG} label="Help & Support" onPress={() => navigation.navigate('Help&Support')} />
 
                     <TouchableOpacity
@@ -218,6 +219,7 @@ export default function ProfileScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="Name"
+                            placeholderTextColor={"#777"}
                             value={editableUser?.name}
                             onChangeText={text =>
                                 setEditableUser(prev => ({
@@ -230,6 +232,8 @@ export default function ProfileScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="Phone"
+                            placeholderTextColor={"#777"}
+
                             keyboardType="phone-pad"
                             value={editableUser?.phone}
                             onChangeText={text =>
@@ -243,6 +247,8 @@ export default function ProfileScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="Email"
+                            placeholderTextColor={"#777"}
+
                             keyboardType="email-address"
                             value={editableUser?.email}
                             onChangeText={text =>
@@ -255,6 +261,8 @@ export default function ProfileScreen() {
 
                         <TextInput
                             style={styles.input}
+                            placeholderTextColor={"#777"}
+
                             placeholder="Date of Birth"
                             value={editableUser?.dob}
                             onChangeText={text =>
@@ -268,6 +276,8 @@ export default function ProfileScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="Gotra"
+                            placeholderTextColor={"#777"}
+
                             value={editableUser?.gotra}
                             onChangeText={text =>
                                 setEditableUser(prev => ({
@@ -280,6 +290,8 @@ export default function ProfileScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="Rashi"
+                            placeholderTextColor={"#777"}
+
                             value={editableUser?.rashi}
                             onChangeText={text =>
                                 setEditableUser(prev => ({
@@ -290,12 +302,19 @@ export default function ProfileScreen() {
                         />
 
                         <View style={styles.buttonRow}>
-                            <Button
-                                title="Cancel"
-                                color="red"
+                            <TouchableOpacity
+                                style={[styles.button, styles.cancel]}
                                 onPress={() => setModalVisible(false)}
-                            />
-                            <Button title="Save" onPress={handleSave} />
+                            >
+                                <Text style={styles.text}>Cancel</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={[styles.button, styles.save]}
+                                onPress={handleSave}
+                            >
+                                <Text style={styles.text}>Save</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </View>
@@ -346,7 +365,7 @@ const styles = StyleSheet.create({
     avatarText: { color: '#fff', fontSize: 22, fontWeight: '700' },
 
     userName: { fontSize: 16, fontWeight: '700' },
-    userInfo: { color: '#777', fontSize: 12, marginTop: 2 },
+    userInfo: { color: '#000', fontSize: 12, marginTop: 2 },
 
     membershipCard: {
         backgroundColor: '#f97316',
@@ -401,6 +420,26 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginTop: 10,
+    },
+    button: {
+        flex: 1,
+        padding: 12,
+        borderRadius: 12,
+        alignItems: "center",
+        marginHorizontal: 8,
+    },
+
+    cancel: {
+        backgroundColor: "#777",
+    },
+
+    save: {
+        backgroundColor: "#f97316",
+    },
+
+    text: {
+        color: "#fff",
+        fontWeight: "600",
     },
     logoutItem: {
         flexDirection: 'row',
